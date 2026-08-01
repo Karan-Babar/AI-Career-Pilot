@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -20,8 +20,7 @@ export default function Dashboard() {
       <p>Welcome, {user?.name} 👋</p>
 
       <div className="card-grid">
-        <div className="card">📄 Resume Analysis — coming next</div>
-        <div className="card">✅ ATS Score — coming next</div>
+        <Link to="/resume" className="card">📄 Resume Analysis & ATS Score</Link>
         <div className="card">🎯 Job Matching — coming next</div>
         <div className="card">💼 LinkedIn Analysis — coming next</div>
         <div className="card">📊 Placement Probability — coming next</div>
