@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import ResumeUpload from "./pages/ResumeUpload";
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -21,6 +22,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/resume"
+        element={
+          <ProtectedRoute>
+            <ResumeUpload />
           </ProtectedRoute>
         }
       />
