@@ -1,38 +1,42 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import ResumeUpload from "./pages/ResumeUpload";
+import JobMatching from "./pages/JobMatching";
+import LinkedInAnalysis from "./pages/LinkedInAnalysis";
+import PlacementProbability from "./pages/PlacementProbability";
+import InterviewPrep from "./pages/InterviewPrep";
+import CareerRoadmap from "./pages/CareerRoadmap";
 
-function ProtectedRoute({ children }) {
+function ProtectedLayout() {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  if (!user) return <Navigate to="/login" />;
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/resume" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/resume"
-        element={
-          <ProtectedRoute>
-            <ResumeUpload />
-          </ProtectedRoute>
-        }
-      />
+
+      <Route element={<ProtectedLayout />}>
+        <Route path="/resume" element={<ResumeUpload />} />
+        <Route path="/job-matching" element={<JobMatching />} />
+        <Route path="/linkedin" element={<LinkedInAnalysis />} />
+        <Route path="/placement" element={<PlacementProbability />} />
+        <Route path="/interview" element={<InterviewPrep />} />
+        <Route path="/roadmap" element={<CareerRoadmap />} />
+      </Route>
     </Routes>
   );
 }
