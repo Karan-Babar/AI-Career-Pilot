@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom";
 
 const ANALYSIS_STEPS = [
   "Uploading resume",
@@ -18,7 +17,6 @@ export default function ResumeUpload() {
   const [currentStep, setCurrentStep] = useState(-1);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
-  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -101,7 +99,6 @@ export default function ResumeUpload() {
     <div className="dashboard">
       <header>
         <h1>Resume Analysis & ATS Score</h1>
-        <button onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
       </header>
 
       {!loading && (
@@ -202,11 +199,19 @@ export default function ResumeUpload() {
 }
 
 function ScoreCard({ label, value, big }) {
-  const color = value >= 75 ? "#16a34a" : value >= 50 ? "#d97706" : "#dc2626";
+  const color = value >= 75 ? "#2dd4bf" : value >= 50 ? "#f5a623" : "#ef4444";
+  const pct = value ?? 0;
   return (
     <div className={`score-card ${big ? "big" : ""}`}>
-      <div className="score-value" style={{ color }}>
-        {value ?? "-"}
+      <div
+        className="score-gauge"
+        style={{
+          background: `conic-gradient(${color} ${pct * 3.6}deg, #232b3d ${pct * 3.6}deg)`,
+        }}
+      >
+        <div className="score-gauge-inner" style={{ color }}>
+          {value ?? "-"}
+        </div>
       </div>
       <div className="score-label">{label}</div>
     </div>
