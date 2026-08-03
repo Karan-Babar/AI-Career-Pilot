@@ -17,7 +17,7 @@ export default function Login() {
     try {
       const { data } = await api.post("/auth/login", form);
       login(data);
-      navigate("/dashboard");
+      navigate("/resume");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");
     }
@@ -25,16 +25,45 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <h2>Welcome back</h2>
-        {error && <p className="error">{error}</p>}
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <button type="submit">Login</button>
-        <p>
-          Don't have an account? <Link to="/register">Register</Link>
+      <div className="auth-brand-panel">
+        <div className="brand-mark">
+          <div className="brand-compass"></div>
+          <span className="brand-name">AI Career Pilot</span>
+        </div>
+        <h1 className="brand-headline">
+          Navigate your <span>placement journey</span> with data, not guesswork.
+        </h1>
+        <p className="brand-subtext">
+          Resume analysis, ATS scoring, job matching, and interview prep — all in one flight deck built for placement season.
         </p>
-      </form>
+        <div className="flight-path">
+          <div className="flight-path-item">
+            <span className="flight-path-dot"></span> ATS-READY RESUME SCORING
+          </div>
+          <div className="flight-path-item">
+            <span className="flight-path-dot"></span> SEMANTIC JOB MATCHING
+          </div>
+          <div className="flight-path-item">
+            <span className="flight-path-dot"></span> PLACEMENT PROBABILITY ENGINE
+          </div>
+        </div>
+      </div>
+
+      <div className="auth-form-panel">
+        <form className="auth-card" onSubmit={handleSubmit}>
+          <h2>Welcome back</h2>
+          <p className="auth-sub">Log in to continue your placement prep.</p>
+          {error && <p className="error">{error}</p>}
+          <label className="field-label">Email</label>
+          <input name="email" type="email" placeholder="you@college.edu" onChange={handleChange} required />
+          <label className="field-label">Password</label>
+          <input name="password" type="password" placeholder="••••••••" onChange={handleChange} required />
+          <button type="submit">Log In</button>
+          <p>
+            New here? <Link to="/register">Create an account</Link>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
