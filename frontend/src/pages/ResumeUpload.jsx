@@ -19,20 +19,6 @@ export default function ResumeUpload() {
   const [result, setResult] = useState(null);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const fetchExisting = async () => {
-      try {
-        const { data } = await api.get("/resume/me");
-        if (data?.atsReport?.overallScore != null) {
-          setResult({ parsedResume: data.parsedResume, atsReport: data.atsReport });
-        }
-      } catch (err) {
-        // no existing analysis yet, ignore
-      }
-    };
-    fetchExisting();
-  }, []);
-
   const validateAndSetFile = (selected) => {
     setError("");
     if (!selected) return;
