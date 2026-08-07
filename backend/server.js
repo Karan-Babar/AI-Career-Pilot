@@ -5,8 +5,8 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
+const jobMatchRoutes = require("./routes/jobMatchRoutes");
 // Future module routes will be added here:
-// const jobMatchRoutes = require("./routes/jobMatchRoutes");
 // const linkedinRoutes = require("./routes/linkedinRoutes");
 // const placementRoutes = require("./routes/placementRoutes");
 // const interviewRoutes = require("./routes/interviewRoutes");
@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
-// app.use("/api/job-match", jobMatchRoutes);
+app.use("/api/job-match", jobMatchRoutes);
 // app.use("/api/linkedin", linkedinRoutes);
 // app.use("/api/placement", placementRoutes);
 // app.use("/api/interview", interviewRoutes);

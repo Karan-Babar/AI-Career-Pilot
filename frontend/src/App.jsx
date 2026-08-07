@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AppDataProvider } from "./context/AppDataContext";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -44,7 +45,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <AppDataProvider>
+        <AppRoutes />
+      </AppDataProvider>
     </AuthProvider>
   );
 }
