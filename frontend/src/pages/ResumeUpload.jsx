@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import api from "../api/axios";
+import { useAppData } from "../context/AppDataContext";
 
 const ANALYSIS_STEPS = [
   "Uploading resume",
@@ -16,7 +17,7 @@ export default function ResumeUpload() {
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(-1);
   const [error, setError] = useState("");
-  const [result, setResult] = useState(null);
+  const { resumeResult: result, setResumeResult: setResult } = useAppData();
   const fileInputRef = useRef(null);
 
   const validateAndSetFile = (selected) => {

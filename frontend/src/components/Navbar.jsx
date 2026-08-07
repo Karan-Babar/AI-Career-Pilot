@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAppData } from "../context/AppDataContext";
 
 const NAV_LINKS = [
   { to: "/resume", label: "Resume & ATS" },
@@ -13,13 +14,15 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
+const { resetAppData } = useAppData();
+const navigate = useNavigate();
+const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+const handleLogout = () => {
+  logout();
+  resetAppData();
+  navigate("/login");
+};
 
   const closeMenu = () => setMenuOpen(false);
 
