@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
     // Raw extracted resume text
     resumeText: { type: String, default: "" },
     resumeFileName: { type: String, default: "" },
