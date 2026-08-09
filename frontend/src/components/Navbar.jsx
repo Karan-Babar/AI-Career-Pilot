@@ -26,6 +26,10 @@ const handleLogout = () => {
 
   const closeMenu = () => setMenuOpen(false);
 
+  const links = user?.isAdmin
+  ? [...NAV_LINKS, { to: "/admin", label: "Admin Dashboard" }]
+  : NAV_LINKS;
+
   return (
     <nav className="navbar">
       <div className="navbar-top">

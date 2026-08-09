@@ -17,7 +17,7 @@ export default function Login() {
     try {
       const { data } = await api.post("/auth/login", form);
       login(data);
-      navigate("/resume");
+      navigate(data.isAdmin ? "/admin" : "/resume");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");
     }
