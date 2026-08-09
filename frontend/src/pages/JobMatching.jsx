@@ -2,6 +2,22 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import { useAppData } from "../context/AppDataContext";
 
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function getSearchLinks(roleName) {
+  const encoded = encodeURIComponent(roleName);
+  const slug = slugify(roleName);
+  return {
+    linkedin: `https://www.linkedin.com/jobs/search/?keywords=${encoded}`,
+    naukri: `https://www.naukri.com/${slug}-jobs`,
+  };
+}
+
 export default function JobMatching() {
   const [mode, setMode] = useState("recommend"); // "recommend" | "compare"
   const [loading, setLoading] = useState(false);
@@ -136,6 +152,21 @@ const [jobDescription, setJobDescription] = useState("");
                         ))}
                       </div>
                     )}
+  <div className="search-links">
+  {(() => {
+    const links = getSearchLinks(r.role);
+    return (
+      <>
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="search-link-btn">
+          🔗 Search on LinkedIn
+        </a>
+        <a href={links.naukri} target="_blank" rel="noopener noreferrer" className="search-link-btn">
+          🔗 Search on Naukri
+        </a>
+      </>
+    );
+  })()}
+</div>
                   </div>
                 ))}
               </div>
@@ -168,11 +199,28 @@ const [jobDescription, setJobDescription] = useState("");
                 <ScoreCard label="Match Score" value={compareResult.matchPercent} big />
               </div>
 
-              {compareResult.closestRoleCategory && (
-                <p className="results-sub">
-                  This looks closest to a <strong>{compareResult.closestRoleCategory}</strong> role.
-                </p>
-              )}
+  {compareResult.closestRoleCategory && (
+  <div className="closest-role-block">
+    <p className="results-sub">
+      This looks closest to a <strong>{compareResult.closestRoleCategory}</strong> role.
+    </p>
+    <div className="search-links">
+      {(() => {
+        const links = getSearchLinks(compareResult.closestRoleCategory);
+        return (
+          <>
+            <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="search-link-btn">
+              🔗 Search on LinkedIn
+            </a>
+            <a href={links.naukri} target="_blank" rel="noopener noreferrer" className="search-link-btn">
+              🔗 Search on Naukri
+            </a>
+          </>
+        );
+      })()}
+    </div>
+  </div>
+)}
 
               <h3>Matched Skills</h3>
               <div className="skill-chip-group">

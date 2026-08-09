@@ -11,6 +11,7 @@ import LinkedInAnalysis from "./pages/LinkedInAnalysis";
 import PlacementProbability from "./pages/PlacementProbability";
 import InterviewPrep from "./pages/InterviewPrep";
 import CareerRoadmap from "./pages/CareerRoadmap";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function ProtectedLayout() {
   const { user } = useAuth();
@@ -37,6 +38,7 @@ function AppRoutes() {
         <Route path="/placement" element={<PlacementProbability />} />
         <Route path="/interview" element={<InterviewPrep />} />
         <Route path="/roadmap" element={<CareerRoadmap />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );

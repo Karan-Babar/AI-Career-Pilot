@@ -754,6 +754,143 @@ button {
   margin-top: 0.6rem;
 }
 
+.search-links {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.search-link-btn {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.search-link-btn:hover {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  background: var(--bg-panel-raised);
+}
+
+.closest-role-block {
+  margin-bottom: 1rem;
+}
+
+/* -----------------------------------------------------------------
+   Admin Dashboard
+----------------------------------------------------------------- */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.admin-stat-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.admin-stat-card.highlight {
+  border-color: var(--accent-amber-dim);
+  background: var(--bg-panel-raised);
+}
+
+.admin-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.admin-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 30px;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.bar-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.bar-track {
+  background: var(--bg-deep);
+  border-radius: 6px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-amber-dim), var(--accent-amber));
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.bar-count {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+.student-table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.student-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.student-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.student-table td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.student-table tr:hover td {
+  background: var(--bg-panel-raised);
+}
 /* -----------------------------------------------------------------
    Resume upload page
 ----------------------------------------------------------------- */
