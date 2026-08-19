@@ -1126,3 +1126,113 @@ button {
   margin-bottom: 0.3rem;
   color: var(--text-muted);
 }
+
+/* -----------------------------------------------------------------
+   Interview Prep page
+----------------------------------------------------------------- */
+.interview-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+.interview-category-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.3rem;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  color: inherit;
+  font-family: inherit;
+}
+
+.interview-category-card:hover:not(:disabled) {
+  border-color: var(--accent-amber-dim);
+  transform: translateY(-2px);
+}
+
+.interview-category-card:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.interview-category-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.interview-category-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.interview-session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.interview-progress-track {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.interview-progress-dot {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border-subtle);
+  transition: background 0.2s ease;
+}
+
+.interview-progress-dot.done {
+  background: var(--accent-teal);
+}
+
+.interview-progress-dot.active {
+  background: var(--accent-amber);
+}
+
+.interview-flashcard {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 1.6rem;
+}
+
+.interview-flashcard h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.interview-checklist {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+}
+
+.interview-checklist h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--accent-teal);
+}
+
+.interview-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.2rem;
+}
