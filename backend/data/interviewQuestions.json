@@ -1,0 +1,537 @@
+[
+  {
+    "category": "HR & Behavioral",
+    "questions": [
+      {
+        "id": "hr1",
+        "question": "Tell me about yourself.",
+        "points": [
+          "Brief intro: who you are, current year/degree, core interest area",
+          "1-2 highlights (a project, internship, or achievement)",
+          "Why you're a fit for the kind of role you're applying to",
+          "Keep it under 60-90 seconds when spoken aloud"
+        ]
+      },
+      {
+        "id": "hr2",
+        "question": "Why should we hire you?",
+        "points": [
+          "Name specific skills that match the job requirement",
+          "Back each skill with a concrete example (project/internship)",
+          "Mention a soft skill (teamwork, ownership, learning speed)",
+          "Avoid generic claims with no evidence behind them"
+        ]
+      },
+      {
+        "id": "hr3",
+        "question": "Describe a challenging situation and how you handled it.",
+        "points": [
+          "Use STAR: Situation, Task, Action, Result",
+          "Focus on YOUR specific actions, not the team's in general",
+          "State a measurable or clear outcome",
+          "Pick a real, specific example — not a vague generality"
+        ]
+      },
+      {
+        "id": "hr4",
+        "question": "What are your strengths and weaknesses?",
+        "points": [
+          "Strength: relevant to the role, with a quick example",
+          "Weakness: genuine, not a disguised humble-brag",
+          "Show what you're actively doing to improve the weakness",
+          "Keep both answers concise, not a long list"
+        ]
+      },
+      {
+        "id": "hr5",
+        "question": "Where do you see yourself in 5 years?",
+        "points": [
+          "Show realistic ambition tied to the role/industry",
+          "Mention growth in skills or responsibility, not just a job title",
+          "Connect it back to why this company/role helps get there",
+          "Avoid answers that sound unrelated to the job you're applying for"
+        ]
+      },
+      {
+        "id": "hr6",
+        "question": "Why do you want to work at our company?",
+        "points": [
+          "Reference something specific about the company (product, values, work)",
+          "Connect it to your own skills or interests",
+          "Avoid generic answers that could apply to any company",
+          "Shows you've actually researched them beforehand"
+        ]
+      },
+      {
+        "id": "hr7",
+        "question": "Describe a time you worked in a team and faced a conflict.",
+        "points": [
+          "Briefly explain the disagreement without blaming anyone",
+          "Focus on how you communicated or resolved it",
+          "State what the team learned or how it improved outcomes",
+          "Shows maturity and collaboration, not just 'I was right'"
+        ]
+      },
+      {
+        "id": "hr8",
+        "question": "How do you handle pressure or tight deadlines?",
+        "points": [
+          "Give a concrete example, not just a general statement",
+          "Mention a specific technique (prioritizing, breaking tasks down)",
+          "Show the outcome was still good despite the pressure",
+          "Avoid claiming you 'never' feel stressed — sound authentic"
+        ]
+      },
+      {
+        "id": "hr9",
+        "question": "Do you have any questions for us?",
+        "points": [
+          "Always have at least 1-2 questions ready — never say 'no'",
+          "Ask about the team, tech stack, or growth opportunities",
+          "Avoid asking only about salary/perks at this stage",
+          "Shows genuine interest in the role beyond just getting hired"
+        ]
+      },
+      {
+        "id": "hr10",
+        "question": "Why did you choose this field/branch of study?",
+        "points": [
+          "Give a genuine reason (interest, a project, an experience)",
+          "Connect it to what you enjoy doing day-to-day in this field",
+          "Keep it honest rather than an overly rehearsed line",
+          "Bonus: mention something you did beyond the syllabus"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Frontend Developer",
+    "questions": [
+      {
+        "id": "fe1",
+        "question": "What is the Virtual DOM and why does React use it?",
+        "points": [
+          "Explain it's an in-memory representation of the real DOM",
+          "Mention diffing/reconciliation to find minimal changes",
+          "Why: direct DOM manipulation is slow, this batches updates",
+          "Bonus: mention keys and how they help the diffing algorithm"
+        ]
+      },
+      {
+        "id": "fe2",
+        "question": "Explain the difference between state and props in React.",
+        "points": [
+          "Props: passed from parent, read-only in the child",
+          "State: managed internally within a component, can change",
+          "Changing state triggers a re-render, props don't own their data",
+          "Give a small example of each"
+        ]
+      },
+      {
+        "id": "fe3",
+        "question": "What is the CSS box model?",
+        "points": [
+          "Content, padding, border, margin — in that order",
+          "Explain box-sizing: content-box vs border-box",
+          "Mention how it affects element sizing calculations",
+          "Bonus: give a practical bug this misunderstanding causes"
+        ]
+      },
+      {
+        "id": "fe4",
+        "question": "How does event delegation work in JavaScript?",
+        "points": [
+          "Events bubble up from child to parent elements",
+          "Attach one listener to a parent instead of many on children",
+          "Mention e.target vs e.currentTarget",
+          "Why it's useful: performance, works for dynamically added elements"
+        ]
+      },
+      {
+        "id": "fe5",
+        "question": "What are React hooks and why were they introduced?",
+        "points": [
+          "Functions that let you use state/lifecycle in function components",
+          "Name a few: useState, useEffect, useContext",
+          "Why: avoid class components, better logic reuse (custom hooks)",
+          "Mention rules of hooks (top-level, only in React functions)"
+        ]
+      },
+      {
+        "id": "fe6",
+        "question": "What is responsive web design and how do you implement it?",
+        "points": [
+          "Design that adapts to different screen sizes/devices",
+          "Mention media queries, flexible grids, relative units (%, rem)",
+          "Mobile-first vs desktop-first approach",
+          "Bonus: mention flexbox/grid or a framework like Tailwind"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Backend Developer",
+    "questions": [
+      {
+        "id": "be1",
+        "question": "What is REST and what makes an API RESTful?",
+        "points": [
+          "Representational State Transfer — architectural style, not a protocol",
+          "Stateless requests, resource-based URLs, standard HTTP methods",
+          "Mention proper status codes (200, 201, 404, 500)",
+          "Bonus: idempotency of GET/PUT vs POST"
+        ]
+      },
+      {
+        "id": "be2",
+        "question": "Explain the difference between SQL and NoSQL databases.",
+        "points": [
+          "SQL: structured schema, relational, ACID compliant",
+          "NoSQL: flexible schema, document/key-value/graph based",
+          "When to use which — structured relational data vs flexible/scaling needs",
+          "Give an example of each (MySQL vs MongoDB)"
+        ]
+      },
+      {
+        "id": "be3",
+        "question": "What is middleware in a framework like Express.js?",
+        "points": [
+          "Functions that run between the request and the final handler",
+          "Access to req, res, and next()",
+          "Common uses: auth checks, logging, parsing request bodies",
+          "Mention middleware order matters"
+        ]
+      },
+      {
+        "id": "be4",
+        "question": "How do you handle authentication in a web application?",
+        "points": [
+          "Explain session-based vs token-based (JWT) authentication",
+          "Mention password hashing (bcrypt) — never store plain text",
+          "Where the token is stored and sent (headers, cookies)",
+          "Bonus: mention refresh tokens or token expiry"
+        ]
+      },
+      {
+        "id": "be5",
+        "question": "What is database indexing and why is it useful?",
+        "points": [
+          "A data structure that speeds up lookups on a column",
+          "Trade-off: faster reads, slower writes, extra storage",
+          "When to use it: columns frequently searched/filtered/joined on",
+          "Bonus: mention a specific index type (B-tree)"
+        ]
+      },
+      {
+        "id": "be6",
+        "question": "What are microservices and what problems do they solve?",
+        "points": [
+          "Breaking an app into small, independently deployable services",
+          "Benefits: independent scaling, tech flexibility, fault isolation",
+          "Trade-offs: added complexity, network overhead, need for orchestration",
+          "Contrast briefly with a monolithic architecture"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Data Scientist",
+    "questions": [
+      {
+        "id": "ds1",
+        "question": "What is the difference between supervised and unsupervised learning?",
+        "points": [
+          "Supervised: trained on labeled data (input-output pairs)",
+          "Unsupervised: finds patterns in unlabeled data",
+          "Give an example of each (classification vs clustering)",
+          "Bonus: mention semi-supervised or reinforcement learning exists too"
+        ]
+      },
+      {
+        "id": "ds2",
+        "question": "What is overfitting and how do you prevent it?",
+        "points": [
+          "Model performs well on training data, poorly on unseen data",
+          "Prevention: more data, regularization, cross-validation",
+          "Mention simpler models or dropout (for neural nets)",
+          "Bonus: explain the bias-variance tradeoff briefly"
+        ]
+      },
+      {
+        "id": "ds3",
+        "question": "Explain the difference between precision and recall.",
+        "points": [
+          "Precision: of predicted positives, how many were correct",
+          "Recall: of actual positives, how many were correctly identified",
+          "Mention there's a trade-off between the two",
+          "Give a real-world example where one matters more (e.g. medical screening)"
+        ]
+      },
+      {
+        "id": "ds4",
+        "question": "What is feature engineering and why does it matter?",
+        "points": [
+          "Creating/transforming input variables to improve model performance",
+          "Examples: normalization, encoding categorical variables, new derived features",
+          "Why it matters: good features often matter more than the algorithm choice",
+          "Bonus: mention feature selection to reduce dimensionality"
+        ]
+      },
+      {
+        "id": "ds5",
+        "question": "What is the difference between a Type I and Type II error?",
+        "points": [
+          "Type I: false positive — rejecting a true null hypothesis",
+          "Type II: false negative — failing to reject a false null hypothesis",
+          "Relate it back to precision/recall if helpful",
+          "Give a simple example (e.g. spam detection)"
+        ]
+      },
+      {
+        "id": "ds6",
+        "question": "How would you handle missing data in a dataset?",
+        "points": [
+          "Mention checking why data is missing (random vs systematic)",
+          "Options: drop rows/columns, imputation (mean/median/mode), predictive imputation",
+          "Explain trade-offs of each approach",
+          "Bonus: mention flagging missingness itself as a feature"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Machine Learning Engineer",
+    "questions": [
+      {
+        "id": "ml1",
+        "question": "What is the difference between a Machine Learning Engineer and a Data Scientist?",
+        "points": [
+          "ML Engineer: focuses on deploying, scaling, productionizing models",
+          "Data Scientist: focuses more on analysis, experimentation, insights",
+          "Overlap exists but ML Engineers care more about pipelines/infra",
+          "Mention MLOps as a related concept"
+        ]
+      },
+      {
+        "id": "ml2",
+        "question": "What is gradient descent?",
+        "points": [
+          "An optimization algorithm to minimize a loss function",
+          "Iteratively adjusts weights in the direction of steepest descent",
+          "Mention learning rate and its effect on convergence",
+          "Bonus: name a variant (SGD, Adam)"
+        ]
+      },
+      {
+        "id": "ml3",
+        "question": "How do you deploy a machine learning model to production?",
+        "points": [
+          "Mention exporting/serializing the trained model",
+          "Wrapping it behind an API (e.g. Flask/FastAPI endpoint)",
+          "Mention monitoring for model drift after deployment",
+          "Bonus: containerization (Docker) for consistent environments"
+        ]
+      },
+      {
+        "id": "ml4",
+        "question": "What is a confusion matrix and why is it useful?",
+        "points": [
+          "A table showing true/false positives and negatives",
+          "Helps compute precision, recall, F1-score",
+          "More informative than accuracy alone, especially for imbalanced data",
+          "Give a quick example of reading one"
+        ]
+      },
+      {
+        "id": "ml5",
+        "question": "What is transfer learning?",
+        "points": [
+          "Using a pre-trained model as a starting point for a new task",
+          "Why: saves training time/data compared to training from scratch",
+          "Example: fine-tuning a pre-trained image or language model",
+          "Mention freezing early layers vs fine-tuning all layers"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Android Developer",
+    "questions": [
+      {
+        "id": "an1",
+        "question": "What is the Activity lifecycle in Android?",
+        "points": [
+          "Name the key stages: onCreate, onStart, onResume, onPause, onStop, onDestroy",
+          "Explain when each is triggered",
+          "Mention why understanding this matters (resource management, saving state)",
+          "Bonus: mention onSaveInstanceState for config changes"
+        ]
+      },
+      {
+        "id": "an2",
+        "question": "What is the difference between a Fragment and an Activity?",
+        "points": [
+          "Activity: a single screen with its own lifecycle",
+          "Fragment: a reusable portion of UI hosted within an Activity",
+          "Fragments have their own lifecycle tied to the host Activity",
+          "Why fragments: reusability, flexible layouts (tablets vs phones)"
+        ]
+      },
+      {
+        "id": "an3",
+        "question": "What is Jetpack Compose and how is it different from the old View system?",
+        "points": [
+          "Declarative UI toolkit vs the old imperative XML-based View system",
+          "You describe what the UI should look like for a given state",
+          "Less boilerplate, easier state management with recomposition",
+          "Bonus: mention it's now Google's recommended approach"
+        ]
+      },
+      {
+        "id": "an4",
+        "question": "How do you handle background tasks in Android?",
+        "points": [
+          "Mention Coroutines/WorkManager as modern approaches",
+          "Explain why you shouldn't block the main/UI thread",
+          "WorkManager for guaranteed deferrable background work",
+          "Bonus: mention older approaches (AsyncTask) are now deprecated"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "DevOps Engineer",
+    "questions": [
+      {
+        "id": "do1",
+        "question": "What is CI/CD and why is it important?",
+        "points": [
+          "CI: automatically building/testing code on every change",
+          "CD: automatically deploying code that passes those checks",
+          "Benefits: faster releases, fewer manual errors, quicker feedback",
+          "Bonus: name a tool (GitHub Actions, Jenkins)"
+        ]
+      },
+      {
+        "id": "do2",
+        "question": "What is the difference between Docker and a virtual machine?",
+        "points": [
+          "Docker: containers share the host OS kernel, lightweight",
+          "VM: full OS per instance, heavier, more isolated",
+          "Docker starts faster and uses fewer resources",
+          "Mention use case: consistent environments across dev/prod"
+        ]
+      },
+      {
+        "id": "do3",
+        "question": "What is Kubernetes used for?",
+        "points": [
+          "Orchestrating and managing containerized applications at scale",
+          "Handles scaling, load balancing, self-healing (restarting failed containers)",
+          "Mention pods, deployments, services as key concepts",
+          "Why: managing many containers manually doesn't scale"
+        ]
+      },
+      {
+        "id": "do4",
+        "question": "What is Infrastructure as Code (IaC)?",
+        "points": [
+          "Managing infrastructure through config files instead of manual setup",
+          "Benefits: version control, repeatability, faster provisioning",
+          "Name a tool (Terraform, Ansible)",
+          "Bonus: mention idempotency of IaC scripts"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Cybersecurity Analyst",
+    "questions": [
+      {
+        "id": "cy1",
+        "question": "What is the difference between a vulnerability, a threat, and a risk?",
+        "points": [
+          "Vulnerability: a weakness that could be exploited",
+          "Threat: a potential event that could exploit a vulnerability",
+          "Risk: the likelihood and impact of a threat exploiting a vulnerability",
+          "Give a simple example connecting all three"
+        ]
+      },
+      {
+        "id": "cy2",
+        "question": "What is SQL injection and how do you prevent it?",
+        "points": [
+          "Attacker inserts malicious SQL through unsanitized user input",
+          "Prevention: parameterized queries/prepared statements",
+          "Mention input validation and least-privilege database accounts",
+          "Bonus: mention ORMs often prevent this by default"
+        ]
+      },
+      {
+        "id": "cy3",
+        "question": "What is the difference between symmetric and asymmetric encryption?",
+        "points": [
+          "Symmetric: same key for encryption and decryption, faster",
+          "Asymmetric: public/private key pair, used for secure key exchange",
+          "Mention a real use case for each",
+          "Bonus: mention HTTPS uses both (asymmetric for handshake, symmetric after)"
+        ]
+      },
+      {
+        "id": "cy4",
+        "question": "What is a firewall and how does it work?",
+        "points": [
+          "A system that monitors/filters incoming and outgoing network traffic",
+          "Based on predefined security rules",
+          "Mention it can be hardware or software based",
+          "Bonus: distinguish stateful vs stateless firewalls"
+        ]
+      }
+    ]
+  },
+  {
+    "category": "UX Designer",
+    "questions": [
+      {
+        "id": "ux1",
+        "question": "What is the difference between UX and UI design?",
+        "points": [
+          "UX: overall experience, usability, how it feels to use",
+          "UI: visual elements — colors, typography, layout",
+          "UX is broader and includes research; UI is more visual execution",
+          "Mention they work closely together, not interchangeable"
+        ]
+      },
+      {
+        "id": "ux2",
+        "question": "What is a user persona and why do designers create them?",
+        "points": [
+          "A fictional representation of a target user based on research",
+          "Helps the team stay focused on real user needs, not assumptions",
+          "Usually includes goals, frustrations, behaviors",
+          "Bonus: mention it should be based on real user research, not guesses"
+        ]
+      },
+      {
+        "id": "ux3",
+        "question": "What is usability testing?",
+        "points": [
+          "Observing real users interacting with a design to find pain points",
+          "Helps validate design decisions before/after development",
+          "Mention it can be done with low-fidelity prototypes too",
+          "Bonus: mention qualitative vs quantitative usability metrics"
+        ]
+      },
+      {
+        "id": "ux4",
+        "question": "What is the importance of accessibility in design?",
+        "points": [
+          "Ensures the product is usable by people with disabilities",
+          "Mention color contrast, screen reader support, keyboard navigation",
+          "Reference WCAG guidelines if known",
+          "Why it matters: legal requirements + wider usable audience"
+        ]
+      }
+    ]
+  }
+]
