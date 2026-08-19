@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const resumeRoutes = require("./routes/resumeRoutes");
 const jobMatchRoutes = require("./routes/jobMatchRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const interviewRoutes = require("./routes/interviewRoutes");
 // Future module routes will be added here:
 // const linkedinRoutes = require("./routes/linkedinRoutes");
 // const placementRoutes = require("./routes/placementRoutes");
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/job-match", jobMatchRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/interview", interviewRoutes);
 // app.use("/api/linkedin", linkedinRoutes);
 // app.use("/api/placement", placementRoutes);
 // app.use("/api/interview", interviewRoutes);
