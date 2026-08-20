@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { scoreAnswer } = require("../services/interviewScoreService");
 
 const QUESTION_BANK = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "data", "interviewQuestions.json"), "utf-8")
@@ -36,4 +37,17 @@ exports.getQuestions = (req, res) => {
   const questions = shuffle(entry.questions).slice(0, n);
 
   res.status(200).json({ category, questions });
+};
+
+// @route POST /api/interview/score
+// Body: { category, answer }
+exports.scoreInterviewAnswer = (req, res) => {
+  const { category, answer } = req.body;
+
+  if (!answer || answer.trim().length < 3) {
+    return res.status(400).json({ message: "Please write an answer before checking it." });
+  }
+
+  const result = scoreAnswer(category, answer);
+  res.status(200).json(result);
 };
