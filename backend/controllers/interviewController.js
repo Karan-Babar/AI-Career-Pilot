@@ -25,6 +25,7 @@ exports.getCategories = (req, res) => {
 };
 
 // @route GET /api/interview/questions?category=Frontend Developer&count=5
+// Strips the `keywords` scoring key before sending to the client.
 exports.getQuestions = (req, res) => {
   const { category, count } = req.query;
 
@@ -34,20 +35,30 @@ exports.getQuestions = (req, res) => {
   }
 
   const n = Math.min(parseInt(count, 10) || 5, entry.questions.length);
-  const questions = shuffle(entry.questions).slice(0, n);
+  const picked = shuffle(entry.questions).slice(0, n);
+
+  const questions = picked.map(({ id, question, points }) => ({ id, question, points }));
 
   res.status(200).json({ category, questions });
 };
 
 // @route POST /api/interview/score
-// Body: { category, answer }
+// Body: { questionId, answer }
 exports.scoreInterviewAnswer = (req, res) => {
-  const { category, answer } = req.body;
+  try {
+    const { questionId, answer } = req.body;
 
-  if (!answer || answer.trim().length < 3) {
-    return res.status(400).json({ message: "Please write an answer before checking it." });
+    if (!questionId) {
+      return res.status(400).json({ message: "Missing questionId" });
+    }
+    if (!answer || answer.trim().length < 3) {
+      return res.status(400).json({ message: "Please write an answer before checking it." });
+    }
+
+    const result = scoreAnswer(questionId, answer);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Interview scoring error:", error);
+    res.status(500).json({ message: error.message || "Failed to score answer" });
   }
-
-  const result = scoreAnswer(category, answer);
-  res.status(200).json(result);
 };
