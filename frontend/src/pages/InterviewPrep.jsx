@@ -65,26 +65,26 @@ export default function InterviewPrep() {
     }
   };
 
-  const checkAnswer = async () => {
-    if (!myAnswer.trim() || myAnswer.trim().length < 3) {
-      setError("Write an answer first, then check it.");
-      return;
-    }
-    setChecking(true);
-    setError("");
-    try {
-      const { data } = await api.post("/interview/score", {
-        category: selectedCategory,
-        answer: myAnswer,
-      });
-      setScoreResult(data);
-      setQuestionScores((prev) => ({ ...prev, [currentIndex]: data.overallScore }));
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to score your answer.");
-    } finally {
-      setChecking(false);
-    }
-  };
+const checkAnswer = async () => {
+  if (!myAnswer.trim() || myAnswer.trim().length < 3) {
+    setError("Write an answer first, then check it.");
+    return;
+  }
+  setChecking(true);
+  setError("");
+  try {
+    const { data } = await api.post("/interview/score", {
+      questionId: currentQuestion.id,
+      answer: myAnswer,
+    });
+    setScoreResult(data);
+    setQuestionScores((prev) => ({ ...prev, [currentIndex]: data.overallScore }));
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to score your answer.");
+  } finally {
+    setChecking(false);
+  }
+};
 
   const goToQuestion = (index) => {
     setCurrentIndex(index);
