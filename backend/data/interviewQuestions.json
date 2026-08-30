@@ -5,6 +5,7 @@
       {
         "id": "hr1",
         "question": "Tell me about yourself.",
+        "keywords": ["background", "degree", "final year", "project", "internship", "achievement", "skills", "interest", "goal", "fit"],
         "points": [
           "Brief intro: who you are, current year/degree, core interest area",
           "1-2 highlights (a project, internship, or achievement)",
@@ -15,6 +16,7 @@
       {
         "id": "hr2",
         "question": "Why should we hire you?",
+        "keywords": ["skills", "experience", "project", "teamwork", "ownership", "learning", "achievement", "match", "strength", "value"],
         "points": [
           "Name specific skills that match the job requirement",
           "Back each skill with a concrete example (project/internship)",
@@ -25,6 +27,7 @@
       {
         "id": "hr3",
         "question": "Describe a challenging situation and how you handled it.",
+        "keywords": ["situation", "task", "action", "result", "challenge", "team", "deadline", "solved", "learned", "outcome"],
         "points": [
           "Use STAR: Situation, Task, Action, Result",
           "Focus on YOUR specific actions, not the team's in general",
@@ -35,6 +38,7 @@
       {
         "id": "hr4",
         "question": "What are your strengths and weaknesses?",
+        "keywords": ["strength", "weakness", "improve", "example", "learning", "feedback", "growth", "practice", "working on", "aware"],
         "points": [
           "Strength: relevant to the role, with a quick example",
           "Weakness: genuine, not a disguised humble-brag",
@@ -45,6 +49,7 @@
       {
         "id": "hr5",
         "question": "Where do you see yourself in 5 years?",
+        "keywords": ["growth", "skills", "responsibility", "career", "goal", "learning", "company", "role", "future", "develop"],
         "points": [
           "Show realistic ambition tied to the role/industry",
           "Mention growth in skills or responsibility, not just a job title",
@@ -55,6 +60,7 @@
       {
         "id": "hr6",
         "question": "Why do you want to work at our company?",
+        "keywords": ["company", "product", "values", "culture", "research", "mission", "opportunity", "growth", "team", "industry"],
         "points": [
           "Reference something specific about the company (product, values, work)",
           "Connect it to your own skills or interests",
@@ -65,6 +71,7 @@
       {
         "id": "hr7",
         "question": "Describe a time you worked in a team and faced a conflict.",
+        "keywords": ["team", "conflict", "disagreement", "communication", "resolved", "compromise", "listened", "respect", "outcome", "collaboration"],
         "points": [
           "Briefly explain the disagreement without blaming anyone",
           "Focus on how you communicated or resolved it",
@@ -75,6 +82,7 @@
       {
         "id": "hr8",
         "question": "How do you handle pressure or tight deadlines?",
+        "keywords": ["pressure", "deadline", "priority", "prioritize", "time management", "stress", "plan", "organized", "calm", "deliver"],
         "points": [
           "Give a concrete example, not just a general statement",
           "Mention a specific technique (prioritizing, breaking tasks down)",
@@ -85,6 +93,7 @@
       {
         "id": "hr9",
         "question": "Do you have any questions for us?",
+        "keywords": ["team", "role", "technology", "growth", "culture", "project", "process", "opportunity", "learning", "expectations"],
         "points": [
           "Always have at least 1-2 questions ready — never say 'no'",
           "Ask about the team, tech stack, or growth opportunities",
@@ -95,6 +104,7 @@
       {
         "id": "hr10",
         "question": "Why did you choose this field/branch of study?",
+        "keywords": ["interest", "passion", "project", "curious", "enjoy", "branch", "technology", "problem solving", "learn", "motivation"],
         "points": [
           "Give a genuine reason (interest, a project, an experience)",
           "Connect it to what you enjoy doing day-to-day in this field",
@@ -110,6 +120,7 @@
       {
         "id": "fe1",
         "question": "What is the Virtual DOM and why does React use it?",
+        "keywords": ["virtual dom", "real dom", "diffing", "reconciliation", "render", "performance", "keys", "update", "batch", "memory"],
         "points": [
           "Explain it's an in-memory representation of the real DOM",
           "Mention diffing/reconciliation to find minimal changes",
@@ -120,6 +131,7 @@
       {
         "id": "fe2",
         "question": "Explain the difference between state and props in React.",
+        "keywords": ["state", "props", "parent", "child", "read-only", "immutable", "re-render", "component", "data flow", "hook"],
         "points": [
           "Props: passed from parent, read-only in the child",
           "State: managed internally within a component, can change",
@@ -130,6 +142,7 @@
       {
         "id": "fe3",
         "question": "What is the CSS box model?",
+        "keywords": ["content", "padding", "border", "margin", "box-sizing", "border-box", "content-box", "width", "height", "layout"],
         "points": [
           "Content, padding, border, margin — in that order",
           "Explain box-sizing: content-box vs border-box",
@@ -140,6 +153,7 @@
       {
         "id": "fe4",
         "question": "How does event delegation work in JavaScript?",
+        "keywords": ["event delegation", "bubbling", "target", "currenttarget", "listener", "parent", "child", "dynamic", "performance", "dom"],
         "points": [
           "Events bubble up from child to parent elements",
           "Attach one listener to a parent instead of many on children",
@@ -150,6 +164,7 @@
       {
         "id": "fe5",
         "question": "What are React hooks and why were they introduced?",
+        "keywords": ["hooks", "usestate", "useeffect", "usecontext", "function component", "lifecycle", "rules of hooks", "custom hook", "reuse", "class component"],
         "points": [
           "Functions that let you use state/lifecycle in function components",
           "Name a few: useState, useEffect, useContext",
@@ -160,6 +175,7 @@
       {
         "id": "fe6",
         "question": "What is responsive web design and how do you implement it?",
+        "keywords": ["responsive", "media query", "flexbox", "grid", "mobile-first", "breakpoint", "viewport", "relative unit", "rem", "percentage"],
         "points": [
           "Design that adapts to different screen sizes/devices",
           "Mention media queries, flexible grids, relative units (%, rem)",
@@ -175,6 +191,7 @@
       {
         "id": "be1",
         "question": "What is REST and what makes an API RESTful?",
+        "keywords": ["rest", "stateless", "resource", "http method", "get", "post", "put", "delete", "status code", "url"],
         "points": [
           "Representational State Transfer — architectural style, not a protocol",
           "Stateless requests, resource-based URLs, standard HTTP methods",
@@ -185,6 +202,7 @@
       {
         "id": "be2",
         "question": "Explain the difference between SQL and NoSQL databases.",
+        "keywords": ["sql", "nosql", "relational", "schema", "acid", "mongodb", "mysql", "document", "flexible", "scaling"],
         "points": [
           "SQL: structured schema, relational, ACID compliant",
           "NoSQL: flexible schema, document/key-value/graph based",
@@ -195,6 +213,7 @@
       {
         "id": "be3",
         "question": "What is middleware in a framework like Express.js?",
+        "keywords": ["middleware", "request", "response", "next", "express", "authentication", "logging", "order", "function", "pipeline"],
         "points": [
           "Functions that run between the request and the final handler",
           "Access to req, res, and next()",
@@ -205,6 +224,7 @@
       {
         "id": "be4",
         "question": "How do you handle authentication in a web application?",
+        "keywords": ["authentication", "jwt", "session", "token", "bcrypt", "hash", "password", "cookie", "header", "expiry"],
         "points": [
           "Explain session-based vs token-based (JWT) authentication",
           "Mention password hashing (bcrypt) — never store plain text",
@@ -215,6 +235,7 @@
       {
         "id": "be5",
         "question": "What is database indexing and why is it useful?",
+        "keywords": ["index", "b-tree", "query performance", "read", "write", "column", "search", "lookup", "trade-off", "storage"],
         "points": [
           "A data structure that speeds up lookups on a column",
           "Trade-off: faster reads, slower writes, extra storage",
@@ -225,6 +246,7 @@
       {
         "id": "be6",
         "question": "What are microservices and what problems do they solve?",
+        "keywords": ["microservices", "monolith", "scaling", "independent", "deploy", "fault isolation", "api gateway", "service", "container", "communication"],
         "points": [
           "Breaking an app into small, independently deployable services",
           "Benefits: independent scaling, tech flexibility, fault isolation",
@@ -240,6 +262,7 @@
       {
         "id": "ds1",
         "question": "What is the difference between supervised and unsupervised learning?",
+        "keywords": ["supervised", "unsupervised", "labeled", "unlabeled", "classification", "clustering", "regression", "training data", "pattern", "output"],
         "points": [
           "Supervised: trained on labeled data (input-output pairs)",
           "Unsupervised: finds patterns in unlabeled data",
@@ -250,6 +273,7 @@
       {
         "id": "ds2",
         "question": "What is overfitting and how do you prevent it?",
+        "keywords": ["overfitting", "training data", "unseen data", "regularization", "cross-validation", "generalization", "bias", "variance", "simpler model", "dropout"],
         "points": [
           "Model performs well on training data, poorly on unseen data",
           "Prevention: more data, regularization, cross-validation",
@@ -260,6 +284,7 @@
       {
         "id": "ds3",
         "question": "Explain the difference between precision and recall.",
+        "keywords": ["precision", "recall", "false positive", "false negative", "true positive", "trade-off", "f1 score", "classification", "threshold", "accuracy"],
         "points": [
           "Precision: of predicted positives, how many were correct",
           "Recall: of actual positives, how many were correctly identified",
@@ -270,6 +295,7 @@
       {
         "id": "ds4",
         "question": "What is feature engineering and why does it matter?",
+        "keywords": ["feature engineering", "normalization", "encoding", "categorical", "derived feature", "feature selection", "dimensionality", "transform", "preprocessing", "model performance"],
         "points": [
           "Creating/transforming input variables to improve model performance",
           "Examples: normalization, encoding categorical variables, new derived features",
@@ -280,6 +306,7 @@
       {
         "id": "ds5",
         "question": "What is the difference between a Type I and Type II error?",
+        "keywords": ["type i error", "type ii error", "false positive", "false negative", "null hypothesis", "significance", "reject", "hypothesis testing", "statistics", "risk"],
         "points": [
           "Type I: false positive — rejecting a true null hypothesis",
           "Type II: false negative — failing to reject a false null hypothesis",
@@ -290,6 +317,7 @@
       {
         "id": "ds6",
         "question": "How would you handle missing data in a dataset?",
+        "keywords": ["missing data", "imputation", "mean", "median", "mode", "drop", "random", "systematic", "predictive", "flag"],
         "points": [
           "Mention checking why data is missing (random vs systematic)",
           "Options: drop rows/columns, imputation (mean/median/mode), predictive imputation",
@@ -305,6 +333,7 @@
       {
         "id": "ml1",
         "question": "What is the difference between a Machine Learning Engineer and a Data Scientist?",
+        "keywords": ["deployment", "pipeline", "production", "scaling", "infrastructure", "mlops", "model serving", "monitoring", "analysis", "experimentation"],
         "points": [
           "ML Engineer: focuses on deploying, scaling, productionizing models",
           "Data Scientist: focuses more on analysis, experimentation, insights",
@@ -315,6 +344,7 @@
       {
         "id": "ml2",
         "question": "What is gradient descent?",
+        "keywords": ["gradient descent", "loss function", "learning rate", "optimization", "weights", "convergence", "minima", "backpropagation", "step size", "sgd"],
         "points": [
           "An optimization algorithm to minimize a loss function",
           "Iteratively adjusts weights in the direction of steepest descent",
@@ -325,6 +355,7 @@
       {
         "id": "ml3",
         "question": "How do you deploy a machine learning model to production?",
+        "keywords": ["deploy", "api", "flask", "fastapi", "docker", "container", "serialize", "monitor", "drift", "endpoint"],
         "points": [
           "Mention exporting/serializing the trained model",
           "Wrapping it behind an API (e.g. Flask/FastAPI endpoint)",
@@ -335,6 +366,7 @@
       {
         "id": "ml4",
         "question": "What is a confusion matrix and why is it useful?",
+        "keywords": ["confusion matrix", "true positive", "false positive", "true negative", "false negative", "precision", "recall", "accuracy", "classification", "imbalanced"],
         "points": [
           "A table showing true/false positives and negatives",
           "Helps compute precision, recall, F1-score",
@@ -345,6 +377,7 @@
       {
         "id": "ml5",
         "question": "What is transfer learning?",
+        "keywords": ["transfer learning", "pre-trained", "fine-tuning", "freeze layers", "pretrained model", "training time", "dataset size", "embedding", "feature extraction", "domain"],
         "points": [
           "Using a pre-trained model as a starting point for a new task",
           "Why: saves training time/data compared to training from scratch",
@@ -360,6 +393,7 @@
       {
         "id": "an1",
         "question": "What is the Activity lifecycle in Android?",
+        "keywords": ["oncreate", "onstart", "onresume", "onpause", "onstop", "ondestroy", "lifecycle", "state", "onsaveinstancestate", "configuration change"],
         "points": [
           "Name the key stages: onCreate, onStart, onResume, onPause, onStop, onDestroy",
           "Explain when each is triggered",
@@ -370,6 +404,7 @@
       {
         "id": "an2",
         "question": "What is the difference between a Fragment and an Activity?",
+        "keywords": ["fragment", "activity", "lifecycle", "reusable", "ui", "host", "tablet", "phone", "flexible layout", "navigation"],
         "points": [
           "Activity: a single screen with its own lifecycle",
           "Fragment: a reusable portion of UI hosted within an Activity",
@@ -380,6 +415,7 @@
       {
         "id": "an3",
         "question": "What is Jetpack Compose and how is it different from the old View system?",
+        "keywords": ["jetpack compose", "declarative", "imperative", "xml", "recomposition", "state", "ui toolkit", "boilerplate", "composable", "modern"],
         "points": [
           "Declarative UI toolkit vs the old imperative XML-based View system",
           "You describe what the UI should look like for a given state",
@@ -390,6 +426,7 @@
       {
         "id": "an4",
         "question": "How do you handle background tasks in Android?",
+        "keywords": ["coroutine", "workmanager", "background thread", "main thread", "ui thread", "asynctask", "deferrable", "scheduling", "blocking", "async"],
         "points": [
           "Mention Coroutines/WorkManager as modern approaches",
           "Explain why you shouldn't block the main/UI thread",
@@ -405,6 +442,7 @@
       {
         "id": "do1",
         "question": "What is CI/CD and why is it important?",
+        "keywords": ["ci/cd", "continuous integration", "continuous deployment", "pipeline", "build", "test", "automation", "github actions", "jenkins", "release"],
         "points": [
           "CI: automatically building/testing code on every change",
           "CD: automatically deploying code that passes those checks",
@@ -415,6 +453,7 @@
       {
         "id": "do2",
         "question": "What is the difference between Docker and a virtual machine?",
+        "keywords": ["docker", "container", "virtual machine", "kernel", "lightweight", "isolation", "image", "hypervisor", "resource", "startup time"],
         "points": [
           "Docker: containers share the host OS kernel, lightweight",
           "VM: full OS per instance, heavier, more isolated",
@@ -425,6 +464,7 @@
       {
         "id": "do3",
         "question": "What is Kubernetes used for?",
+        "keywords": ["kubernetes", "orchestration", "pod", "deployment", "scaling", "load balancing", "self-healing", "cluster", "container", "service"],
         "points": [
           "Orchestrating and managing containerized applications at scale",
           "Handles scaling, load balancing, self-healing (restarting failed containers)",
@@ -435,6 +475,7 @@
       {
         "id": "do4",
         "question": "What is Infrastructure as Code (IaC)?",
+        "keywords": ["infrastructure as code", "terraform", "ansible", "version control", "repeatable", "provisioning", "automation", "idempotent", "config", "cloud"],
         "points": [
           "Managing infrastructure through config files instead of manual setup",
           "Benefits: version control, repeatability, faster provisioning",
@@ -450,6 +491,7 @@
       {
         "id": "cy1",
         "question": "What is the difference between a vulnerability, a threat, and a risk?",
+        "keywords": ["vulnerability", "threat", "risk", "exploit", "weakness", "impact", "likelihood", "attack", "mitigation", "assessment"],
         "points": [
           "Vulnerability: a weakness that could be exploited",
           "Threat: a potential event that could exploit a vulnerability",
@@ -460,6 +502,7 @@
       {
         "id": "cy2",
         "question": "What is SQL injection and how do you prevent it?",
+        "keywords": ["sql injection", "parameterized query", "prepared statement", "input validation", "sanitize", "database", "least privilege", "orm", "attack", "query"],
         "points": [
           "Attacker inserts malicious SQL through unsanitized user input",
           "Prevention: parameterized queries/prepared statements",
@@ -470,6 +513,7 @@
       {
         "id": "cy3",
         "question": "What is the difference between symmetric and asymmetric encryption?",
+        "keywords": ["symmetric", "asymmetric", "public key", "private key", "encryption", "decryption", "https", "key exchange", "ssl", "certificate"],
         "points": [
           "Symmetric: same key for encryption and decryption, faster",
           "Asymmetric: public/private key pair, used for secure key exchange",
@@ -480,6 +524,7 @@
       {
         "id": "cy4",
         "question": "What is a firewall and how does it work?",
+        "keywords": ["firewall", "traffic", "rules", "network", "filter", "stateful", "stateless", "hardware", "software", "monitor"],
         "points": [
           "A system that monitors/filters incoming and outgoing network traffic",
           "Based on predefined security rules",
@@ -495,6 +540,7 @@
       {
         "id": "ux1",
         "question": "What is the difference between UX and UI design?",
+        "keywords": ["ux", "ui", "usability", "experience", "visual design", "layout", "research", "interaction", "typography", "user-centered"],
         "points": [
           "UX: overall experience, usability, how it feels to use",
           "UI: visual elements — colors, typography, layout",
@@ -505,6 +551,7 @@
       {
         "id": "ux2",
         "question": "What is a user persona and why do designers create them?",
+        "keywords": ["persona", "target user", "research", "goals", "frustrations", "behavior", "fictional", "empathy", "user needs", "design decision"],
         "points": [
           "A fictional representation of a target user based on research",
           "Helps the team stay focused on real user needs, not assumptions",
@@ -515,6 +562,7 @@
       {
         "id": "ux3",
         "question": "What is usability testing?",
+        "keywords": ["usability testing", "user feedback", "prototype", "observe", "pain point", "iteration", "qualitative", "quantitative", "task", "validate"],
         "points": [
           "Observing real users interacting with a design to find pain points",
           "Helps validate design decisions before/after development",
@@ -525,6 +573,7 @@
       {
         "id": "ux4",
         "question": "What is the importance of accessibility in design?",
+        "keywords": ["accessibility", "wcag", "screen reader", "color contrast", "keyboard navigation", "inclusive", "disability", "alt text", "aria", "usable"],
         "points": [
           "Ensures the product is usable by people with disabilities",
           "Mention color contrast, screen reader support, keyboard navigation",
