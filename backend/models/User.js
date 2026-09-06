@@ -51,6 +51,7 @@ const userSchema = new mongoose.Schema(
     },
 
     placementProbability: { type: Number, default: null },
+    linkedinReport: { type: mongoose.Schema.Types.Mixed, default: null },
   },
   { timestamps: true }
 );
