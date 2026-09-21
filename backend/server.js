@@ -9,9 +9,8 @@ const jobMatchRoutes = require("./routes/jobMatchRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const interviewRoutes = require("./routes/interviewRoutes");
 const linkedinRoutes = require("./routes/linkedinRoutes");
+const placementRoutes = require("./routes/placementRoutes");
 // Future module routes will be added here:
-// const linkedinRoutes = require("./routes/linkedinRoutes");
-// const placementRoutes = require("./routes/placementRoutes");
 // const interviewRoutes = require("./routes/interviewRoutes");
 
 const app = express();
@@ -35,8 +34,7 @@ app.use("/api/job-match", jobMatchRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/linkedin", linkedinRoutes);
-// app.use("/api/linkedin", linkedinRoutes);
-// app.use("/api/placement", placementRoutes);
+app.use("/api/placement", placementRoutes);
 // app.use("/api/interview", interviewRoutes);
 
 const PORT = process.env.PORT || 5000;
