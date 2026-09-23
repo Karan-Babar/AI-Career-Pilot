@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { stemmer } = require("porter-stemmer");
+const ENGLISH_WORDS = require("an-array-of-english-words");
 
 const QUESTION_BANK = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "data", "interviewQuestions.json"), "utf-8")
@@ -13,9 +14,6 @@ QUESTION_BANK.forEach((cat) => {
   });
 });
 
-// Broad vocabulary of "ownership" verbs — deliberately wide so genuinely
-// specific answers aren't falsely flagged as vague just because they used
-// a word outside a too-narrow list.
 const OWNERSHIP_VERBS = [
   "built", "led", "designed", "implemented", "managed", "created", "developed",
   "decided", "fixed", "solved", "wrote", "debugged", "optimized", "presented",
@@ -27,6 +25,44 @@ const OWNERSHIP_VERBS = [
   "maintained", "supported", "diagnosed", "investigated", "documented",
   "reviewed", "completed", "applied", "helped", "learned", "ensured",
 ];
+
+// ---------------------------------------------------------------------
+// Real-word validity check — combines a general English dictionary with
+// every technical term already present in this project's own question
+// bank + ownership verbs, so legitimate tech jargon ("REST", "MongoDB",
+// "JWT") is never mistaken for gibberish just because it's not in a
+// general dictionary. This is what catches nonsense input like random
+// keyboard mashing.
+// ---------------------------------------------------------------------
+const DICTIONARY = new Set(ENGLISH_WORDS);
+
+const TECH_VOCAB = new Set();
+QUESTION_BANK.forEach((cat) => {
+  cat.questions.forEach((q) => {
+    (q.keywords || []).forEach((kw) => {
+      kw.toLowerCase().split(/[^a-z0-9.#+]+/).forEach((w) => {
+        if (w) TECH_VOCAB.add(w);
+      });
+    });
+  });
+});
+OWNERSHIP_VERBS.forEach((v) => TECH_VOCAB.add(v));
+
+function isValidToken(token) {
+  const t = token.toLowerCase().replace(/[^a-z0-9.#+]/g, "");
+  if (t.length <= 1) return true; // ignore stray single characters/punctuation
+  if (DICTIONARY.has(t)) return true;
+  if (TECH_VOCAB.has(t)) return true;
+  if (/^[a-z]+\.(js|py|net|io)$/i.test(t)) return true; // node.js-style tech terms
+  return false;
+}
+
+function realWordRatio(text) {
+  const tokens = text.split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return 0;
+  const validCount = tokens.filter(isValidToken).length;
+  return validCount / tokens.length;
+}
 
 function tokenize(text) {
   return (text.toLowerCase().match(/[a-z0-9.#+]+/g) || []);
@@ -67,7 +103,6 @@ function scoreAnswer(questionId, answerText) {
   const matchedKeywords = keywords.filter((kw) => matchKeyword(lower, tokens, stemmedTokenSet, kw));
   const keywordCoverage = keywords.length > 0 ? matchedKeywords.length / keywords.length : 0;
 
-  // Depth bonus: even a short answer gets a small baseline credit for attempting it
   let depthBonus;
   if (wordCount < 10) depthBonus = 4;
   else if (wordCount < 25) depthBonus = 7;
@@ -83,25 +118,27 @@ function scoreAnswer(questionId, answerText) {
   if (ownershipHits.length > 0) specificityBonus += 2;
   else if (hasFirstPerson) specificityBonus += 1;
 
-  // Base of 45 represents "a real, attempted answer"; up to 45 more is earned
-  // through relevance, depth, and specificity. Capped at 90 so there's always
-  // room for improvement, never a false sense of a "perfect" answer.
   const rawScore = 45 + keywordCoverage * 35 + depthBonus + specificityBonus;
-  const overallScore = Math.min(90, Math.round(rawScore));
 
-  const relevanceScore = Math.round(keywordCoverage * 100);
-  const depthScore = Math.round((depthBonus / 12) * 100);
-  const specificityScore = Math.min(100, Math.round((specificityBonus / 4.5) * 100));
+  // Gibberish check: if most "words" in the answer aren't recognizable as
+  // real English or real technical terms, crush the score regardless of
+  // what the rest of the formula computed. A ratio of 1.0 (all real words)
+  // applies no penalty; a ratio of 0 (pure nonsense) forces the score to 0.
+  const wordValidityRatio = realWordRatio(text);
+  const gibberishMultiplier = wordCount < 3 ? 1 : Math.min(1, wordValidityRatio / 0.6);
+  const isLikelyGibberish = wordCount >= 3 && wordValidityRatio < 0.4;
 
-  const suggestions = buildSuggestions({
-    wordCount,
-    hasNumber,
-    ownershipHits,
-    hasFirstPerson,
-    matchedKeywords,
-    keywords,
-    overallScore,
-  });
+  const overallScore = Math.round(Math.min(90, rawScore) * gibberishMultiplier);
+
+  const relevanceScore = isLikelyGibberish ? 0 : Math.round(keywordCoverage * 100);
+  const depthScore = isLikelyGibberish ? 0 : Math.round((depthBonus / 12) * 100);
+  const specificityScore = isLikelyGibberish ? 0 : Math.min(100, Math.round((specificityBonus / 4.5) * 100));
+
+  const suggestions = isLikelyGibberish
+    ? ["This doesn't look like a real answer — please write an actual response to the question in your own words."]
+    : buildSuggestions({
+        wordCount, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore,
+      });
 
   return {
     overallScore,
@@ -109,7 +146,7 @@ function scoreAnswer(questionId, answerText) {
     specificityScore,
     relevanceScore,
     wordCount,
-    matchedTerms: matchedKeywords,
+    matchedTerms: isLikelyGibberish ? [] : matchedKeywords,
     suggestions,
   };
 }
@@ -125,7 +162,6 @@ function buildSuggestions({ wordCount, hasNumber, ownershipHits, hasFirstPerson,
     suggestions.push(`Your answer is quite long (${wordCount} words) — for a spoken interview, trim it to the most relevant 60-90 words.`);
   }
 
-  // Only fire the generic "add specifics" warning when BOTH signals are genuinely absent
   if (!hasNumber && ownershipHits.length === 0 && !hasFirstPerson) {
     suggestions.push("Try describing what YOU specifically did (\"I designed\", \"I implemented\") and, if relevant, a measurable detail like a number or percentage.");
   } else if (!hasNumber && ownershipHits.length > 0) {
