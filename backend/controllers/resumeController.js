@@ -26,6 +26,14 @@ exports.uploadResume = async (req, res) => {
     user.resumeFileName = req.file.originalname;
     user.parsedResume = parsedResume;
     user.atsReport = atsReport;
+    // Keep completed roadmap history, but flag it for regeneration because
+    // the new resume changes the skill baseline used by the plan.
+    if (user.careerRoadmap) {
+      user.careerRoadmap.isStale = true;
+      user.careerRoadmap.staleReason = "Resume updated";
+      user.careerRoadmap.staleAt = new Date().toISOString();
+      user.markModified("careerRoadmap");
+    }
     await user.save();
 
     // Clean up the uploaded file from disk (we've already stored the extracted text)

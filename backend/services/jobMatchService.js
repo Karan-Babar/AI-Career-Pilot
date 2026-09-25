@@ -105,4 +105,20 @@ function compareToJobDescription(resumeText, jobDescriptionText) {
   };
 }
 
-module.exports = { recommendRoles, compareToJobDescription, JOB_ROLES };
+function getRoleMatch(resumeText, roleName) {
+  const role = JOB_ROLES.find((entry) => entry.role.toLowerCase() === String(roleName).toLowerCase());
+  if (!role) return null;
+
+  const resumeSkills = extractSkillsFromText(resumeText);
+  const { matched, missing, coverage } = scoreOverlap(resumeSkills, role.skills);
+
+  return {
+    role: role.role,
+    matchPercent: Math.round(coverage * 100),
+    matchedSkills: matched,
+    missingSkills: missing,
+    totalRoleSkills: role.skills.length,
+  };
+}
+
+module.exports = { recommendRoles, compareToJobDescription, getRoleMatch, JOB_ROLES };
