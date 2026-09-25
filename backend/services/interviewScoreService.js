@@ -28,59 +28,177 @@ const OWNERSHIP_VERBS = [
 
 const MIN_WORDS_TO_EVALUATE = 15;
 
-// ---------------------------------------------------------------------
-// Real-word validity check (gibberish detection) — unchanged from before.
-// ---------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Quality checks are intentionally conservative. They reject obvious random
+// input without pretending that a dictionary can prove factual correctness.
+// ---------------------------------------------------------------------------
 const DICTIONARY = new Set(ENGLISH_WORDS);
 
 const TECH_VOCAB = new Set();
 QUESTION_BANK.forEach((cat) => {
   cat.questions.forEach((q) => {
-    (q.keywords || []).forEach((kw) => {
-      kw.toLowerCase().split(/[^a-z0-9.#+]+/).forEach((w) => {
-        if (w) TECH_VOCAB.add(w);
-      });
+    // Include terms from both the question and its scoring rubric. This keeps
+    // legitimate technical terms from being mistaken for random text.
+    const vocabulary = `${q.question} ${(q.keywords || []).join(" ")}`;
+    vocabulary.toLowerCase().split(/[^a-z0-9.#+]+/).forEach((word) => {
+      if (word) TECH_VOCAB.add(word);
     });
   });
 });
-OWNERSHIP_VERBS.forEach((v) => TECH_VOCAB.add(v));
+OWNERSHIP_VERBS.forEach((verb) => TECH_VOCAB.add(verb));
 
-function isValidToken(token) {
-  const t = token.toLowerCase().replace(/[^a-z0-9.#+]/g, "");
-  if (t.length <= 1) return true;
-  if (DICTIONARY.has(t)) return true;
-  if (TECH_VOCAB.has(t)) return true;
-  if (/^[a-z]+\.(js|py|net|io)$/i.test(t)) return true;
-  return false;
-}
+const FUNCTION_WORDS = new Set([
+  "a", "an", "and", "are", "as", "at", "because", "but", "by", "for", "from",
+  "had", "has", "have", "i", "in", "is", "it", "my", "of", "on", "or", "our",
+  "so", "that", "the", "their", "there", "these", "they", "this", "to", "was",
+  "we", "were", "with", "you", "your",
+]);
 
-function realWordRatio(text) {
-  const tokens = text.split(/\s+/).filter(Boolean);
-  if (tokens.length === 0) return 0;
-  const validCount = tokens.filter(isValidToken).length;
-  return validCount / tokens.length;
+const QUESTION_STOP_WORDS = new Set([
+  "about", "after", "again", "also", "and", "are", "best", "between", "could",
+  "does", "explain", "from", "have", "how", "into", "its", "more", "most",
+  "not", "should", "that", "the", "their", "there", "these", "they", "this",
+  "what", "when", "where", "which", "why", "with", "would", "your",
+]);
+
+function normalizeToken(token) {
+  return token.toLowerCase().replace(/[^a-z0-9.#+]/g, "");
 }
 
 function tokenize(text) {
-  return (text.toLowerCase().match(/[a-z0-9.#+]+/g) || []);
+  return text.toLowerCase().match(/[a-z0-9.#+]+/g) || [];
+}
+
+function getWordTokens(text) {
+  return tokenize(text).filter((token) => /[a-z]/i.test(token));
+}
+
+function isValidToken(token) {
+  const t = normalizeToken(token);
+  if (!t || !/[a-z]/i.test(t)) return false;
+
+  // "a" and "i" are meaningful words. Other isolated characters should not
+  // artificially raise the quality ratio (for example, the "h" in keyboard
+  // mashing).
+  if (t.length === 1) return t === "a" || t === "i";
+
+  if (DICTIONARY.has(t) || TECH_VOCAB.has(t)) return true;
+  if (/^[a-z]+\.(js|py|net|io)$/i.test(t)) return true;
+
+  const stemmed = stemmer(t);
+  return DICTIONARY.has(stemmed) || TECH_VOCAB.has(stemmed);
 }
 
 function matchKeyword(lowerText, tokens, stemmedTokenSet, keyword) {
-  if (keyword.includes(" ")) {
-    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const normalizedKeyword = keyword.toLowerCase();
+  if (normalizedKeyword.includes(" ")) {
+    const escaped = normalizedKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const regex = new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, "i");
     return regex.test(lowerText);
   }
-  if (tokens.includes(keyword)) return true;
-  return stemmedTokenSet.has(stemmer(keyword));
+  if (tokens.includes(normalizedKeyword)) return true;
+  return stemmedTokenSet.has(stemmer(normalizedKeyword));
 }
 
-function findOwnershipHits(lowerText) {
-  const hits = OWNERSHIP_VERBS
-    .map((v) => ({ v, idx: lowerText.indexOf(v) }))
-    .filter((h) => h.idx !== -1)
-    .sort((a, b) => a.idx - b.idx);
-  return hits.map((h) => h.v);
+function findOwnershipHits(tokens, stemmedTokenSet) {
+  const tokenSet = new Set(tokens);
+  return OWNERSHIP_VERBS.filter(
+    (verb) => tokenSet.has(verb) || stemmedTokenSet.has(stemmer(verb))
+  );
+}
+
+function getQuestionTerms(question) {
+  const text = `${question.question} ${(question.keywords || []).join(" ")}`;
+  return tokenize(text).filter(
+    (token) => token.length > 2 && !QUESTION_STOP_WORDS.has(token)
+  );
+}
+
+function analyzeAnswerQuality(text, question, matchedKeywords, ownershipHits) {
+  const wordTokens = getWordTokens(text);
+  const normalizedTokens = wordTokens.map(normalizeToken).filter(Boolean);
+  const validWordCount = normalizedTokens.filter(isValidToken).length;
+  const validWordRatio = wordTokens.length > 0 ? validWordCount / wordTokens.length : 0;
+  const uniqueWordRatio = normalizedTokens.length > 0
+    ? new Set(normalizedTokens).size / normalizedTokens.length
+    : 0;
+  const contentTokens = normalizedTokens.filter((token) => !FUNCTION_WORDS.has(token));
+  const contentUniqueRatio = contentTokens.length > 0
+    ? new Set(contentTokens).size / contentTokens.length
+    : 1;
+
+  const tokenSet = new Set(normalizedTokens);
+  const functionWordCount = normalizedTokens.filter((token) => FUNCTION_WORDS.has(token)).length;
+  const questionTerms = getQuestionTerms(question);
+  const hasQuestionSignal = matchedKeywords.length > 0 || questionTerms.some(
+    (term) => tokenSet.has(term) || tokenSet.has(stemmer(term))
+  );
+  const hasNaturalLanguageSignal = functionWordCount > 0
+    || ownershipHits.length > 0
+    || hasQuestionSignal;
+
+  const repeatedWordRatio = uniqueWordRatio < 0.45 && wordTokens.length >= 4;
+  const repeatedContentWords = contentTokens.length >= 4 && contentUniqueRatio < 0.35;
+  const singleUnknownLongWord = wordTokens.length === 1
+    && validWordCount === 0
+    && wordTokens[0].length >= 5;
+  const mostlyUnknownShortWords = wordTokens.length >= 3
+    && validWordRatio < 0.35
+    && validWordCount <= 1
+    && ownershipHits.length === 0;
+  const mostlyUnknownWords = wordTokens.length >= 5 && validWordRatio < 0.2;
+  const lowQualityWithoutStructure = wordTokens.length >= 5
+    && validWordRatio < 0.35
+    && !hasNaturalLanguageSignal;
+  const repeatedLowQualityWords = repeatedWordRatio && validWordRatio < 0.7;
+  const noMeaningfulWords = wordTokens.length === 0 && text.length >= 3;
+
+  const isLikelyGibberish = noMeaningfulWords
+    || singleUnknownLongWord
+    || mostlyUnknownShortWords
+    || mostlyUnknownWords
+    || lowQualityWithoutStructure
+    || repeatedLowQualityWords
+    || repeatedContentWords;
+
+  return {
+    meaningfulWordCount: wordTokens.length,
+    validWordCount,
+    validWordRatio,
+    uniqueWordRatio,
+    hasQuestionSignal,
+    isLikelyGibberish,
+  };
+}
+
+function makeResult({
+  status,
+  submittedWordCount,
+  meaningfulWordCount,
+  matchedTerms = [],
+  suggestions = [],
+  scores = {},
+  message,
+}) {
+  const isScored = status === "scored";
+  const isNeedsMoreDetail = status === "needs_more_detail";
+  const defaultScore = isNeedsMoreDetail ? null : 0;
+  const finalMessage = message || suggestions[0] || "";
+
+  return {
+    status,
+    isValid: isScored,
+    scoreAvailable: isScored,
+    overallScore: isScored ? scores.overallScore ?? 0 : defaultScore,
+    depthScore: isScored ? scores.depthScore ?? 0 : defaultScore,
+    specificityScore: isScored ? scores.specificityScore ?? 0 : defaultScore,
+    relevanceScore: isScored ? scores.relevanceScore ?? 0 : defaultScore,
+    wordCount: submittedWordCount,
+    meaningfulWordCount,
+    matchedTerms: status === "scored" || isNeedsMoreDetail ? matchedTerms : [],
+    suggestions: suggestions.slice(0, 3),
+    message: finalMessage,
+  };
 }
 
 function scoreAnswer(questionId, answerText) {
@@ -91,88 +209,121 @@ function scoreAnswer(questionId, answerText) {
 
   const text = (answerText || "").trim();
   const lower = text.toLowerCase();
-  const wordCount = text.split(/\s+/).filter(Boolean).length;
-
+  const submittedWordCount = text.split(/\s+/).filter(Boolean).length;
   const tokens = tokenize(text);
-  const stemmedTokenSet = new Set(tokens.map((t) => stemmer(t)));
+  const stemmedTokenSet = new Set(tokens.map((token) => stemmer(token)));
 
   const keywords = question.keywords || [];
-  const matchedKeywords = keywords.filter((kw) => matchKeyword(lower, tokens, stemmedTokenSet, kw));
+  const matchedKeywords = keywords.filter((keyword) =>
+    matchKeyword(lower, tokens, stemmedTokenSet, keyword)
+  );
   const keywordCoverage = keywords.length > 0 ? matchedKeywords.length / keywords.length : 0;
 
+  const ownershipHits = findOwnershipHits(tokens, stemmedTokenSet);
+  const quality = analyzeAnswerQuality(text, question, matchedKeywords, ownershipHits);
+
+  if (quality.isLikelyGibberish) {
+    return makeResult({
+      status: "invalid",
+      submittedWordCount,
+      meaningfulWordCount: quality.meaningfulWordCount,
+      suggestions: [
+        "This answer does not appear to contain meaningful words. Please write a real response to the question in your own words.",
+      ],
+      message: "This answer was marked invalid because it does not appear to be a meaningful response.",
+    });
+  }
+
+  if (quality.meaningfulWordCount < MIN_WORDS_TO_EVALUATE) {
+    const suggestions = [
+      `Your answer has only ${quality.meaningfulWordCount} meaningful word${quality.meaningfulWordCount === 1 ? "" : "s"}. Write at least ${MIN_WORDS_TO_EVALUATE} words and explain your reasoning, not just a one-line answer.`,
+    ];
+
+    if (matchedKeywords.length > 0) {
+      suggestions.push(`You mentioned ${matchedKeywords.slice(0, 3).join(", ")}; add an explanation and a specific result.`);
+    } else {
+      suggestions.push(`Try covering the key concepts for this question, such as: ${keywords.slice(0, 5).join(", ")}.`);
+    }
+
+    return makeResult({
+      status: "needs_more_detail",
+      submittedWordCount,
+      meaningfulWordCount: quality.meaningfulWordCount,
+      matchedTerms: matchedKeywords,
+      suggestions,
+      message: "Your answer is understandable, but it needs more detail before it can be scored fairly.",
+    });
+  }
+
+  if (!quality.hasQuestionSignal) {
+    return makeResult({
+      status: "irrelevant",
+      submittedWordCount,
+      meaningfulWordCount: quality.meaningfulWordCount,
+      suggestions: [
+        `This answer is readable, but it does not appear to address the question. Try explaining: ${keywords.slice(0, 5).join(", ")}.`,
+      ],
+      message: "Your answer was not scored because it does not appear to address the interview question.",
+    });
+  }
+
   const hasNumber = /\d/.test(text);
-  const ownershipHits = findOwnershipHits(lower);
-  const hasFirstPerson = /\bi\b/.test(lower);
-
-  // Gibberish check runs regardless of length
-  const wordValidityRatio = realWordRatio(text);
-  const gibberishMultiplier = wordCount < 3 ? 1 : Math.min(1, wordValidityRatio / 0.6);
-  const isLikelyGibberish = wordCount >= 3 && wordValidityRatio < 0.4;
-
+  const hasFirstPerson = tokens.includes("i");
   let overallScore;
   let depthScore;
   let specificityScore;
   let relevanceScore;
-  let tooShort = false;
 
-  if (wordCount < MIN_WORDS_TO_EVALUATE) {
-    // Hard length gate: an answer under 15 words hasn't given us enough to
-    // meaningfully evaluate, so it's capped well below the "real attempt"
-    // floor used for longer answers, no matter how many keywords it hits.
-    tooShort = true;
-    const base = 15;
-    const rawScore = base + keywordCoverage * 15 + (hasNumber ? 3 : 0) + (ownershipHits.length > 0 ? 3 : 0);
-    overallScore = Math.round(Math.min(40, rawScore) * gibberishMultiplier);
-    depthScore = Math.round((wordCount / MIN_WORDS_TO_EVALUATE) * 100);
-    specificityScore = Math.min(100, Math.round(((hasNumber ? 50 : 0) + (ownershipHits.length > 0 ? 50 : 0))));
-    relevanceScore = Math.round(keywordCoverage * 100);
-  } else {
-    let depthBonus;
-    if (wordCount < 25) depthBonus = 7;
-    else if (wordCount < 50) depthBonus = 9;
-    else depthBonus = 12;
+  let depthBonus;
+  if (quality.meaningfulWordCount < 25) depthBonus = 7;
+  else if (quality.meaningfulWordCount < 50) depthBonus = 9;
+  else depthBonus = 12;
 
-    let specificityBonus = 0;
-    if (hasNumber) specificityBonus += 2.5;
-    if (ownershipHits.length > 0) specificityBonus += 2;
-    else if (hasFirstPerson) specificityBonus += 1;
+  let specificityBonus = 0;
+  if (hasNumber) specificityBonus += 2.5;
+  if (ownershipHits.length > 0) specificityBonus += 2;
+  else if (hasFirstPerson) specificityBonus += 1;
 
-    const rawScore = 45 + keywordCoverage * 35 + depthBonus + specificityBonus;
-    overallScore = Math.round(Math.min(90, rawScore) * gibberishMultiplier);
-    depthScore = Math.round((depthBonus / 12) * 100);
-    specificityScore = Math.min(100, Math.round((specificityBonus / 4.5) * 100));
-    relevanceScore = Math.round(keywordCoverage * 100);
-  }
+  const rawScore = 45 + keywordCoverage * 35 + depthBonus + specificityBonus;
+  overallScore = Math.round(Math.min(90, rawScore));
+  depthScore = Math.round((depthBonus / 12) * 100);
+  specificityScore = Math.min(100, Math.round((specificityBonus / 4.5) * 100));
+  relevanceScore = Math.round(keywordCoverage * 100);
 
-  if (isLikelyGibberish) {
-    depthScore = 0;
-    specificityScore = 0;
-    relevanceScore = 0;
-  }
-
-  const suggestions = isLikelyGibberish
-    ? ["This doesn't look like a real answer — please write an actual response to the question in your own words."]
-    : buildSuggestions({
-        wordCount, tooShort, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore,
-      });
-
-  return {
+  const suggestions = buildSuggestions({
+    wordCount: quality.meaningfulWordCount,
+    hasNumber,
+    ownershipHits,
+    hasFirstPerson,
+    matchedKeywords,
+    keywords,
     overallScore,
-    depthScore,
-    specificityScore,
-    relevanceScore,
-    wordCount,
-    matchedTerms: isLikelyGibberish ? [] : matchedKeywords,
+  });
+
+  return makeResult({
+    status: "scored",
+    submittedWordCount,
+    meaningfulWordCount: quality.meaningfulWordCount,
+    matchedTerms: matchedKeywords,
     suggestions,
-  };
+    message: "Answer evaluated successfully.",
+    scores: {
+      overallScore,
+      depthScore,
+      specificityScore,
+      relevanceScore,
+    },
+  });
 }
 
-function buildSuggestions({ wordCount, tooShort, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore }) {
+function hasQuestion(questionId) {
+  return Object.prototype.hasOwnProperty.call(QUESTIONS_BY_ID, questionId);
+}
+
+function buildSuggestions({ wordCount, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore }) {
   const suggestions = [];
 
-  if (tooShort) {
-    suggestions.push(`Your answer is only ${wordCount} word${wordCount === 1 ? "" : "s"} — write at least ${MIN_WORDS_TO_EVALUATE} words so there's enough to evaluate properly. Explain your reasoning, not just a one-line answer.`);
-  } else if (wordCount < 25) {
+  if (wordCount < 25) {
     suggestions.push(`At ${wordCount} words, add a little more detail — one more sentence on your reasoning or result would help.`);
   } else if (wordCount > 150) {
     suggestions.push(`Your answer is quite long (${wordCount} words) — for a spoken interview, trim it to the most relevant 60-90 words.`);
@@ -186,7 +337,7 @@ function buildSuggestions({ wordCount, tooShort, hasNumber, ownershipHits, hasFi
     suggestions.push("You included a measurable detail — now also name the specific action you took (e.g. \"I built\", \"I optimized\").");
   }
 
-  const missing = keywords.filter((k) => !matchedKeywords.includes(k));
+  const missing = keywords.filter((keyword) => !matchedKeywords.includes(keyword));
   if (matchedKeywords.length === 0) {
     suggestions.push(`This answer didn't touch on the key concepts for this question. Try covering: ${keywords.slice(0, 5).join(", ")}.`);
   } else if (missing.length > 0 && overallScore < 80) {
@@ -200,4 +351,4 @@ function buildSuggestions({ wordCount, tooShort, hasNumber, ownershipHits, hasFi
   return suggestions.slice(0, 3);
 }
 
-module.exports = { scoreAnswer };
+module.exports = { scoreAnswer, hasQuestion };

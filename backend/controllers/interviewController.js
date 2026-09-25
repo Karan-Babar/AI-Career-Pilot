@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { scoreAnswer } = require("../services/interviewScoreService");
+const { scoreAnswer, hasQuestion } = require("../services/interviewScoreService");
 
 const QUESTION_BANK = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "data", "interviewQuestions.json"), "utf-8")
@@ -34,7 +34,11 @@ exports.getQuestions = (req, res) => {
     return res.status(404).json({ message: "Category not found" });
   }
 
-  const n = Math.min(parseInt(count, 10) || 5, entry.questions.length);
+  const requestedCount = Number.parseInt(count, 10);
+  const safeRequestedCount = Number.isFinite(requestedCount) && requestedCount > 0
+    ? requestedCount
+    : 5;
+  const n = Math.min(safeRequestedCount, entry.questions.length);
   const picked = shuffle(entry.questions).slice(0, n);
 
   const questions = picked.map(({ id, question, points }) => ({ id, question, points }));
@@ -46,19 +50,22 @@ exports.getQuestions = (req, res) => {
 // Body: { questionId, answer }
 exports.scoreInterviewAnswer = (req, res) => {
   try {
-    const { questionId, answer } = req.body;
+    const { questionId, answer } = req.body || {};
 
-    if (!questionId) {
+    if (typeof questionId !== "string" || !questionId.trim()) {
       return res.status(400).json({ message: "Missing questionId" });
     }
-    if (!answer || answer.trim().length < 3) {
+    if (typeof answer !== "string" || answer.trim().length < 3) {
       return res.status(400).json({ message: "Please write an answer before checking it." });
+    }
+    if (!hasQuestion(questionId)) {
+      return res.status(404).json({ message: "Question not found" });
     }
 
     const result = scoreAnswer(questionId, answer);
     res.status(200).json(result);
   } catch (error) {
     console.error("Interview scoring error:", error);
-    res.status(500).json({ message: error.message || "Failed to score answer" });
+    res.status(500).json({ message: "Failed to score answer" });
   }
 };
