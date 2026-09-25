@@ -1506,3 +1506,17 @@ button {
   color: var(--accent-amber);
   font-weight: 600;
 }
+
+.word-count-row {
+  margin: -0.6rem 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.word-count-low {
+  color: var(--text-faint);
+}
+
+.word-count-ok {
+  color: var(--accent-teal);
+}

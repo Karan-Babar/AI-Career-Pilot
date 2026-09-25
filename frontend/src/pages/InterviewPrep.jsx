@@ -213,19 +213,29 @@ const checkAnswer = async () => {
             <h2>{currentQuestion.question}</h2>
 
             <textarea
-              className="jd-textarea"
-              placeholder="Type your answer here..."
-              value={myAnswer}
-              onChange={(e) => {
-                setMyAnswer(e.target.value);
-                setScoreResult(null);
-              }}
-              rows={5}
-            />
+  className="jd-textarea"
+  placeholder="Type your answer here... (aim for at least 15 words)"
+  value={myAnswer}
+  onChange={(e) => {
+    setMyAnswer(e.target.value);
+    setScoreResult(null);
+  }}
+  rows={5}
+/>
 
-            <button className="analyze-btn" onClick={checkAnswer} disabled={checking}>
-              {checking ? "Checking..." : "Check My Answer"}
-            </button>
+<div className="word-count-row">
+  <span className={myAnswer.trim().split(/\s+/).filter(Boolean).length >= 15 ? "word-count-ok" : "word-count-low"}>
+    {myAnswer.trim() ? myAnswer.trim().split(/\s+/).filter(Boolean).length : 0} / 15 words minimum
+  </span>
+</div>
+
+<button
+  className="analyze-btn"
+  onClick={checkAnswer}
+  disabled={checking || myAnswer.trim().split(/\s+/).filter(Boolean).length < 15}
+>
+  {checking ? "Checking..." : "Check My Answer"}
+</button>
 
             {scoreResult && (
               <div className="interview-feedback">

@@ -26,13 +26,10 @@ const OWNERSHIP_VERBS = [
   "reviewed", "completed", "applied", "helped", "learned", "ensured",
 ];
 
+const MIN_WORDS_TO_EVALUATE = 15;
+
 // ---------------------------------------------------------------------
-// Real-word validity check — combines a general English dictionary with
-// every technical term already present in this project's own question
-// bank + ownership verbs, so legitimate tech jargon ("REST", "MongoDB",
-// "JWT") is never mistaken for gibberish just because it's not in a
-// general dictionary. This is what catches nonsense input like random
-// keyboard mashing.
+// Real-word validity check (gibberish detection) — unchanged from before.
 // ---------------------------------------------------------------------
 const DICTIONARY = new Set(ENGLISH_WORDS);
 
@@ -50,10 +47,10 @@ OWNERSHIP_VERBS.forEach((v) => TECH_VOCAB.add(v));
 
 function isValidToken(token) {
   const t = token.toLowerCase().replace(/[^a-z0-9.#+]/g, "");
-  if (t.length <= 1) return true; // ignore stray single characters/punctuation
+  if (t.length <= 1) return true;
   if (DICTIONARY.has(t)) return true;
   if (TECH_VOCAB.has(t)) return true;
-  if (/^[a-z]+\.(js|py|net|io)$/i.test(t)) return true; // node.js-style tech terms
+  if (/^[a-z]+\.(js|py|net|io)$/i.test(t)) return true;
   return false;
 }
 
@@ -103,41 +100,60 @@ function scoreAnswer(questionId, answerText) {
   const matchedKeywords = keywords.filter((kw) => matchKeyword(lower, tokens, stemmedTokenSet, kw));
   const keywordCoverage = keywords.length > 0 ? matchedKeywords.length / keywords.length : 0;
 
-  let depthBonus;
-  if (wordCount < 10) depthBonus = 4;
-  else if (wordCount < 25) depthBonus = 7;
-  else if (wordCount < 50) depthBonus = 9;
-  else depthBonus = 12;
-
   const hasNumber = /\d/.test(text);
   const ownershipHits = findOwnershipHits(lower);
   const hasFirstPerson = /\bi\b/.test(lower);
 
-  let specificityBonus = 0;
-  if (hasNumber) specificityBonus += 2.5;
-  if (ownershipHits.length > 0) specificityBonus += 2;
-  else if (hasFirstPerson) specificityBonus += 1;
-
-  const rawScore = 45 + keywordCoverage * 35 + depthBonus + specificityBonus;
-
-  // Gibberish check: if most "words" in the answer aren't recognizable as
-  // real English or real technical terms, crush the score regardless of
-  // what the rest of the formula computed. A ratio of 1.0 (all real words)
-  // applies no penalty; a ratio of 0 (pure nonsense) forces the score to 0.
+  // Gibberish check runs regardless of length
   const wordValidityRatio = realWordRatio(text);
   const gibberishMultiplier = wordCount < 3 ? 1 : Math.min(1, wordValidityRatio / 0.6);
   const isLikelyGibberish = wordCount >= 3 && wordValidityRatio < 0.4;
 
-  const overallScore = Math.round(Math.min(90, rawScore) * gibberishMultiplier);
+  let overallScore;
+  let depthScore;
+  let specificityScore;
+  let relevanceScore;
+  let tooShort = false;
 
-  const relevanceScore = isLikelyGibberish ? 0 : Math.round(keywordCoverage * 100);
-  const depthScore = isLikelyGibberish ? 0 : Math.round((depthBonus / 12) * 100);
-  const specificityScore = isLikelyGibberish ? 0 : Math.min(100, Math.round((specificityBonus / 4.5) * 100));
+  if (wordCount < MIN_WORDS_TO_EVALUATE) {
+    // Hard length gate: an answer under 15 words hasn't given us enough to
+    // meaningfully evaluate, so it's capped well below the "real attempt"
+    // floor used for longer answers, no matter how many keywords it hits.
+    tooShort = true;
+    const base = 15;
+    const rawScore = base + keywordCoverage * 15 + (hasNumber ? 3 : 0) + (ownershipHits.length > 0 ? 3 : 0);
+    overallScore = Math.round(Math.min(40, rawScore) * gibberishMultiplier);
+    depthScore = Math.round((wordCount / MIN_WORDS_TO_EVALUATE) * 100);
+    specificityScore = Math.min(100, Math.round(((hasNumber ? 50 : 0) + (ownershipHits.length > 0 ? 50 : 0))));
+    relevanceScore = Math.round(keywordCoverage * 100);
+  } else {
+    let depthBonus;
+    if (wordCount < 25) depthBonus = 7;
+    else if (wordCount < 50) depthBonus = 9;
+    else depthBonus = 12;
+
+    let specificityBonus = 0;
+    if (hasNumber) specificityBonus += 2.5;
+    if (ownershipHits.length > 0) specificityBonus += 2;
+    else if (hasFirstPerson) specificityBonus += 1;
+
+    const rawScore = 45 + keywordCoverage * 35 + depthBonus + specificityBonus;
+    overallScore = Math.round(Math.min(90, rawScore) * gibberishMultiplier);
+    depthScore = Math.round((depthBonus / 12) * 100);
+    specificityScore = Math.min(100, Math.round((specificityBonus / 4.5) * 100));
+    relevanceScore = Math.round(keywordCoverage * 100);
+  }
+
+  if (isLikelyGibberish) {
+    depthScore = 0;
+    specificityScore = 0;
+    relevanceScore = 0;
+  }
 
   const suggestions = isLikelyGibberish
     ? ["This doesn't look like a real answer — please write an actual response to the question in your own words."]
     : buildSuggestions({
-        wordCount, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore,
+        wordCount, tooShort, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore,
       });
 
   return {
@@ -151,11 +167,11 @@ function scoreAnswer(questionId, answerText) {
   };
 }
 
-function buildSuggestions({ wordCount, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore }) {
+function buildSuggestions({ wordCount, tooShort, hasNumber, ownershipHits, hasFirstPerson, matchedKeywords, keywords, overallScore }) {
   const suggestions = [];
 
-  if (wordCount < 10) {
-    suggestions.push(`Your answer is only ${wordCount} word${wordCount === 1 ? "" : "s"} — try expanding it with a specific example or a bit more explanation.`);
+  if (tooShort) {
+    suggestions.push(`Your answer is only ${wordCount} word${wordCount === 1 ? "" : "s"} — write at least ${MIN_WORDS_TO_EVALUATE} words so there's enough to evaluate properly. Explain your reasoning, not just a one-line answer.`);
   } else if (wordCount < 25) {
     suggestions.push(`At ${wordCount} words, add a little more detail — one more sentence on your reasoning or result would help.`);
   } else if (wordCount > 150) {
