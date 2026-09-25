@@ -1278,6 +1278,41 @@ button {
   border-top: 1px solid var(--border-subtle);
 }
 
+.interview-result-status {
+  border: 1px solid var(--border-glow);
+  border-radius: 10px;
+  background: var(--bg-panel-raised);
+  padding: 1rem 1.1rem;
+}
+
+.interview-result-status strong {
+  display: block;
+  color: var(--accent-amber);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.interview-result-status p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 0.35rem;
+}
+
+.interview-result-status.invalid {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.interview-result-status.invalid strong {
+  color: #f87171;
+}
+
+.interview-result-status.irrelevant {
+  border-color: rgba(245, 166, 35, 0.35);
+  background: rgba(245, 166, 35, 0.08);
+}
+
 .interview-checklist-toggle {
   margin-top: 1.2rem;
   font-size: 0.8rem;

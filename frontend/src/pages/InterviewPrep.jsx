@@ -13,6 +13,8 @@ const CATEGORY_ICONS = {
   "UX Designer": "🎨",
 };
 
+const MIN_CHECK_WORDS = 3;
+
 export default function InterviewPrep() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -65,37 +67,51 @@ export default function InterviewPrep() {
     }
   };
 
-const checkAnswer = async () => {
-  if (!myAnswer.trim() || myAnswer.trim().length < 3) {
-    setError("Write an answer first, then check it.");
-    return;
-  }
-  setChecking(true);
-  setError("");
-  try {
-    const { data } = await api.post("/interview/score", {
-      questionId: currentQuestion.id,
-      answer: myAnswer,
-    });
-    setScoreResult(data);
-    setQuestionScores((prev) => ({ ...prev, [currentIndex]: data.overallScore }));
-  } catch (err) {
-    setError(err.response?.data?.message || "Failed to score your answer.");
-  } finally {
-    setChecking(false);
-  }
-};
+  const checkAnswer = async () => {
+    if (!currentQuestion || countWords(myAnswer) < MIN_CHECK_WORDS) {
+      setError("Write at least a few words first, then check it.");
+      return;
+    }
+
+    const questionId = currentQuestion.id;
+    const questionIndex = currentIndex;
+    setChecking(true);
+    setError("");
+    try {
+      const { data } = await api.post("/interview/score", {
+        questionId,
+        answer: myAnswer,
+      });
+      setScoreResult(data);
+      setQuestionScores((prev) => {
+        const next = { ...prev };
+        if (isScoredResult(data)) {
+          next[questionIndex] = data.overallScore;
+        } else {
+          delete next[questionIndex];
+        }
+        return next;
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to score your answer.");
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const goToQuestion = (index) => {
+    if (checking || index < 0 || index >= questions.length) return;
     setCurrentIndex(index);
     resetQuestionState();
   };
 
   const finishSession = () => {
+    if (checking) return;
     setSessionComplete(true);
   };
 
   const endSession = () => {
+    if (checking) return;
     setSelectedCategory(null);
     setQuestions([]);
     setCurrentIndex(0);
@@ -105,6 +121,7 @@ const checkAnswer = async () => {
   };
 
   const currentQuestion = questions[currentIndex];
+  const currentWordCount = countWords(myAnswer);
   const scoresArray = Object.values(questionScores);
   const avgScore = scoresArray.length
     ? Math.round(scoresArray.reduce((a, b) => a + b, 0) / scoresArray.length)
@@ -121,7 +138,7 @@ const checkAnswer = async () => {
       {!selectedCategory && (
         <>
           <p className="results-sub">
-            Pick a category to start a practice round of 5 questions. Write your own answer,
+            Pick a category to start a practice round of up to 5 questions. Write your own answer,
             then check it against a rule-based scoring engine that evaluates depth, specificity,
             and relevance — no external AI service required.
           </p>
@@ -187,7 +204,7 @@ const checkAnswer = async () => {
             <span className="interview-session-badge">
               {CATEGORY_ICONS[selectedCategory] || "💬"} {selectedCategory}
             </span>
-            <button className="back-btn" onClick={endSession}>
+            <button className="back-btn" onClick={endSession} disabled={checking}>
               End Session
             </button>
           </div>
@@ -213,45 +230,64 @@ const checkAnswer = async () => {
             <h2>{currentQuestion.question}</h2>
 
             <textarea
-  className="jd-textarea"
-  placeholder="Type your answer here... (aim for at least 15 words)"
-  value={myAnswer}
-  onChange={(e) => {
-    setMyAnswer(e.target.value);
-    setScoreResult(null);
-  }}
-  rows={5}
-/>
+              className="jd-textarea"
+              placeholder={`Type your answer here... (minimum ${MIN_CHECK_WORDS} words)`}
+              value={myAnswer}
+              onChange={(e) => {
+                setMyAnswer(e.target.value);
+                setScoreResult(null);
+                setQuestionScores((prev) => {
+                  const next = { ...prev };
+                  delete next[currentIndex];
+                  return next;
+                });
+              }}
+              rows={5}
+            />
 
-<div className="word-count-row">
-  <span className={myAnswer.trim().split(/\s+/).filter(Boolean).length >= 15 ? "word-count-ok" : "word-count-low"}>
-    {myAnswer.trim() ? myAnswer.trim().split(/\s+/).filter(Boolean).length : 0} / 15 words minimum
-  </span>
-</div>
+            <div className="word-count-row">
+              <span className={currentWordCount >= MIN_CHECK_WORDS ? "word-count-ok" : "word-count-low"}>
+                {currentWordCount} / {MIN_CHECK_WORDS} words required
+              </span>
+            </div>
 
-<button
-  className="analyze-btn"
-  onClick={checkAnswer}
-  disabled={checking || myAnswer.trim().split(/\s+/).filter(Boolean).length < 15}
->
-  {checking ? "Checking..." : "Check My Answer"}
-</button>
+            <button
+              className="analyze-btn"
+              onClick={checkAnswer}
+              disabled={checking || currentWordCount < MIN_CHECK_WORDS}
+            >
+              {checking ? "Checking..." : "Check My Answer"}
+            </button>
 
             {scoreResult && (
               <div className="interview-feedback">
-                <div className="score-grid">
-                  <ScoreGauge label="Overall" value={scoreResult.overallScore} big />
-                  <ScoreGauge label="Depth" value={scoreResult.depthScore} />
-                  <ScoreGauge label="Specificity" value={scoreResult.specificityScore} />
-                  <ScoreGauge label="Relevance" value={scoreResult.relevanceScore} />
-                </div>
+                {isScoredResult(scoreResult) ? (
+                  <div className="score-grid">
+                    <ScoreGauge label="Overall" value={scoreResult.overallScore} big />
+                    <ScoreGauge label="Depth" value={scoreResult.depthScore} />
+                    <ScoreGauge label="Specificity" value={scoreResult.specificityScore} />
+                    <ScoreGauge label="Relevance" value={scoreResult.relevanceScore} />
+                  </div>
+                ) : (
+                  <div
+                    className={`interview-result-status ${getResultStatus(scoreResult)}`}
+                    role="alert"
+                  >
+                    <strong>{getResultStatusLabel(scoreResult)}</strong>
+                    <p>{scoreResult.message}</p>
+                  </div>
+                )}
 
-                <h3 style={{ marginTop: "1.2rem" }}>Suggestions</h3>
-                <ul className="suggestions">
-                  {scoreResult.suggestions.map((s, i) => (
-                    <li key={i}>{s}</li>
-                  ))}
-                </ul>
+                {scoreResult.suggestions?.length > 0 && (
+                  <>
+                    <h3 style={{ marginTop: "1.2rem" }}>Suggestions</h3>
+                    <ul className="suggestions">
+                      {scoreResult.suggestions.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             )}
 
@@ -278,16 +314,26 @@ const checkAnswer = async () => {
             <button
               className="back-btn"
               onClick={() => goToQuestion(currentIndex - 1)}
-              disabled={currentIndex === 0}
+              disabled={checking || currentIndex === 0}
             >
               ← Previous
             </button>
             {currentIndex < questions.length - 1 ? (
-              <button className="analyze-btn" style={{ marginBottom: 0 }} onClick={() => goToQuestion(currentIndex + 1)}>
+              <button
+                className="analyze-btn"
+                style={{ marginBottom: 0 }}
+                onClick={() => goToQuestion(currentIndex + 1)}
+                disabled={checking}
+              >
                 Next Question →
               </button>
             ) : (
-              <button className="analyze-btn" style={{ marginBottom: 0 }} onClick={finishSession}>
+              <button
+                className="analyze-btn"
+                style={{ marginBottom: 0 }}
+                onClick={finishSession}
+                disabled={checking}
+              >
                 Finish Session
               </button>
             )}
@@ -296,6 +342,27 @@ const checkAnswer = async () => {
       )}
     </div>
   );
+}
+
+function countWords(text) {
+  return text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+}
+
+function isScoredResult(result) {
+  return result?.status === "scored" || !result?.status;
+}
+
+function getResultStatus(result) {
+  return ["invalid", "needs_more_detail", "irrelevant"].includes(result?.status)
+    ? result.status
+    : "needs_more_detail";
+}
+
+function getResultStatusLabel(result) {
+  if (result?.status === "invalid") return "Answer not recognized";
+  if (result?.status === "irrelevant") return "Answer not related to the question";
+  if (result?.status === "needs_more_detail") return "More detail needed";
+  return "Answer needs attention";
 }
 
 function scoreColor(value) {
