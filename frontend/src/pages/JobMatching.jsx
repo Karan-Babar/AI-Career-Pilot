@@ -2,6 +2,22 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import { useAppData } from "../context/AppDataContext";
 
+export const JOB_PLATFORMS = [
+  { id: "linkedin", label: "LinkedIn" },
+  { id: "naukri", label: "Naukri" },
+  { id: "indeed", label: "Indeed" },
+  { id: "glassdoor", label: "Glassdoor" },
+  { id: "wellfound", label: "Wellfound" },
+];
+
+export const JOB_TYPE_OPTIONS = ["Any", "Full-time", "Internship", "Entry-level"];
+export const WORK_MODE_OPTIONS = ["Any", "Remote", "On-site", "Hybrid"];
+
+const PLATFORM_LABELS = JOB_PLATFORMS.reduce((acc, platform) => {
+  acc[platform.id] = platform.label;
+  return acc;
+}, {});
+
 function slugify(text) {
   return text
     .toLowerCase()
@@ -9,12 +25,104 @@ function slugify(text) {
     .replace(/(^-|-$)/g, "");
 }
 
-function getSearchLinks(roleName) {
-  const encoded = encodeURIComponent(roleName);
-  const slug = slugify(roleName);
+function normalizeFilters(filters = {}) {
   return {
-    linkedin: `https://www.linkedin.com/jobs/search/?keywords=${encoded}`,
-    naukri: `https://www.naukri.com/${slug}-jobs`,
+    location: (filters.location || "").trim(),
+    jobType: filters.jobType || "Any",
+    workMode: filters.workMode || "Any",
+  };
+}
+
+function buildRoleQuery(roleName) {
+  return (roleName || "").trim().replace(/\s+/g, " ");
+}
+
+const GLASSDOOR_CITY_IDS = {
+  pune: 2856202,
+  mumbai: 2851180,
+  delhi: 2891681,
+  "new-delhi": 2891681,
+  bengaluru: 2940587,
+  bangalore: 2940587,
+  hyderabad: 2865319,
+  chennai: 2833209,
+  calcutta: 2901633,
+  kolkata: 2901633,
+};
+
+function getGlassdoorUrl(filters, baseQuery) {
+  const locationSlug = slugify(filters.location || "india");
+  const cityId = GLASSDOOR_CITY_IDS[locationSlug];
+  const locationPrefix = `${locationSlug}-india`;
+  const keywordSlug = slugify(baseQuery);
+  const keywordOffset = locationPrefix.length + 1;
+  const keywordEnd = keywordOffset + keywordSlug.length;
+
+  if (cityId) {
+    return `https://www.glassdoor.co.in/Job/${locationPrefix}-${keywordSlug}-jobs-SRCH_IL.0,${locationPrefix.length}_IC${cityId}_KO${keywordOffset},${keywordEnd}.htm`;
+  }
+
+  const glassdoorQuery = [filters.location, baseQuery]
+    .map((value) => (value || "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return `https://www.glassdoor.co.in/Job/jobs.htm?sc.keyword=${encodeURIComponent(glassdoorQuery)}`;
+}
+
+export function getSearchLinks(roleName, filters = {}) {
+  const f = normalizeFilters(filters);
+  const role = (roleName || "").trim();
+  const baseQuery = buildRoleQuery(role);
+  const encodedBaseQuery = encodeURIComponent(baseQuery);
+  const encodedLocation = encodeURIComponent(f.location);
+
+  // LinkedIn can filter work mode and common job types through URL parameters,
+  // so they are intentionally not appended to the search keyword.
+  const linkedinParams = new URLSearchParams();
+  linkedinParams.set("keywords", baseQuery);
+  if (f.location) linkedinParams.set("location", f.location);
+  if (f.workMode === "On-site") linkedinParams.set("f_WT", "1");
+  if (f.workMode === "Remote") linkedinParams.set("f_WT", "2");
+  if (f.workMode === "Hybrid") linkedinParams.set("f_WT", "3");
+  if (f.jobType === "Full-time") linkedinParams.set("f_JT", "F");
+  if (f.jobType === "Internship") linkedinParams.set("f_JT", "I");
+  if (f.jobType === "Entry-level") linkedinParams.set("f_E", "2");
+
+  // Naukri: role/location in the path and query. Work mode stays a native wfhType.
+  const naukriPath = f.location
+    ? `${slugify(role || "jobs")}-jobs-in-${slugify(f.location)}`
+    : `${slugify(role || "jobs")}-jobs`;
+  let naukriUrl = `https://www.naukri.com/${naukriPath}?k=${encodedBaseQuery}`;
+  if (f.location) naukriUrl += `&l=${encodedLocation}`;
+  if (f.workMode === "On-site") naukriUrl += "&wfhType=0";
+  if (f.workMode === "Remote") naukriUrl += "&wfhType=2";
+  if (f.workMode === "Hybrid") naukriUrl += "&wfhType=3";
+  naukriUrl += "&nignbevent_src=jobsearchDeskGNB";
+
+  // Indeed: role and location are query text/params; job type uses jt.
+  let indeedUrl = `https://www.indeed.com/jobs?q=${encodedBaseQuery}`;
+  if (f.location) indeedUrl += `&l=${encodedLocation}`;
+  if (f.jobType === "Full-time") indeedUrl += "&jt=fulltime";
+  if (f.jobType === "Internship") indeedUrl += "&jt=internship";
+  indeedUrl += "&from=searchOnDesktopSerp";
+
+  // Wellfound: only role and optional keyword plus location.
+  const wellfoundQuery = [baseQuery, f.location]
+    .map((value) => (value || "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return {
+    linkedin: `https://www.linkedin.com/jobs/search/?${linkedinParams.toString()}`,
+    naukri: naukriUrl,
+    indeed: indeedUrl,
+    glassdoor: getGlassdoorUrl(f, baseQuery),
+    wellfound: `https://wellfound.com/jobs?query=${encodeURIComponent(wellfoundQuery)}`,
   };
 }
 
@@ -30,7 +138,15 @@ const {
   setJobCompareResult: setCompareResult,
 } = useAppData();
 const [jobDescription, setJobDescription] = useState("");
+const [jobFilters, setJobFilters] = useState({
+  location: "",
+  jobType: "Any",
+  workMode: "Any",
+});
 
+const updateJobFilter = (field, value) => {
+  setJobFilters((current) => ({ ...current, [field]: value }));
+};
   const fetchRecommendations = async () => {
     setLoading(true);
     setError("");
@@ -68,6 +184,47 @@ const [jobDescription, setJobDescription] = useState("");
       <header>
         <h1>Job Description Matching</h1>
       </header>
+
+      <section className="job-filter-panel">
+        <h2>External Job Search Filters</h2>
+        <p className="results-sub">
+          These filters only affect the external platform links. Your internal role recommendations and match percentages stay the same.
+        </p>
+        <div className="job-filter-grid">
+          <label className="job-filter-field">
+            <span>Location</span>
+            <input
+              type="text"
+              value={jobFilters.location}
+              onChange={(e) => updateJobFilter("location", e.target.value)}
+              placeholder="City, state, or country"
+            />
+          </label>
+
+          <label className="job-filter-field">
+            <span>Job type</span>
+            <select value={jobFilters.jobType} onChange={(e) => updateJobFilter("jobType", e.target.value)}>
+              {JOB_TYPE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="job-filter-field">
+            <span>Work mode</span>
+            <select value={jobFilters.workMode} onChange={(e) => updateJobFilter("workMode", e.target.value)}>
+              {WORK_MODE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </label>
+
+        </div>
+      </section>
 
       <div className="mode-toggle">
         <button
@@ -153,20 +310,21 @@ const [jobDescription, setJobDescription] = useState("");
                       </div>
                     )}
   <div className="search-links">
-  {(() => {
-    const links = getSearchLinks(r.role);
-    return (
-      <>
-        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="search-link-btn">
-          🔗 Search on LinkedIn
+    {(() => {
+      const links = getSearchLinks(r.role, jobFilters);
+      return JOB_PLATFORMS.map((platform) => (
+        <a
+          key={platform.id}
+          href={links[platform.id]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="search-link-btn"
+        >
+          🔗 Search on {platform.label}
         </a>
-        <a href={links.naukri} target="_blank" rel="noopener noreferrer" className="search-link-btn">
-          🔗 Search on Naukri
-        </a>
-      </>
-    );
-  })()}
-</div>
+      ));
+    })()}
+  </div>
                   </div>
                 ))}
               </div>
@@ -206,17 +364,18 @@ const [jobDescription, setJobDescription] = useState("");
     </p>
     <div className="search-links">
       {(() => {
-        const links = getSearchLinks(compareResult.closestRoleCategory);
-        return (
-          <>
-            <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="search-link-btn">
-              🔗 Search on LinkedIn
-            </a>
-            <a href={links.naukri} target="_blank" rel="noopener noreferrer" className="search-link-btn">
-              🔗 Search on Naukri
-            </a>
-          </>
-        );
+        const links = getSearchLinks(compareResult.closestRoleCategory, jobFilters);
+        return JOB_PLATFORMS.map((platform) => (
+          <a
+            key={platform.id}
+            href={links[platform.id]}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="search-link-btn"
+          >
+            🔗 Search on {platform.label}
+          </a>
+        ));
       })()}
     </div>
   </div>
